@@ -2,16 +2,14 @@
 
 import { useListing } from "./hooks/useListing";
 import {
+  ListingImageItemResponseDto,
   ListingStatus,
-  ListingItemResponseDto,
 } from "@/lib/api/listings/types";
-import { useRouter } from "next/router";
 
 type Props = {
   id: number;
 };
 export default function ListingDetailPage({ id }: Props) {
-  const router = useRouter();
   // /listings/[id] 에서 id는 string으로 들어옴
 
   const { data, isLoading, error } = useListing(id);
@@ -28,7 +26,9 @@ export default function ListingDetailPage({ id }: Props) {
     return (
       <main className="p-8 space-y-4">
         <button
-          onClick={() => router.back()}
+          onClick={() => {
+            //목록 이동 버튼
+          }}
           className="text-sm text-gray-500 hover:underline"
         >
           ← 뒤로가기
@@ -54,7 +54,9 @@ export default function ListingDetailPage({ id }: Props) {
       {/* 상단 헤더 */}
       <header className="space-y-2">
         <button
-          onClick={() => router.back()}
+          onClick={() => {
+            //목록으로 돌아가기 버튼
+          }}
           className="text-sm text-gray-500 hover:underline"
         >
           ← 뒤로가기
@@ -70,33 +72,41 @@ export default function ListingDetailPage({ id }: Props) {
         </div>
       </header>
 
-      {/* TODO: 사진 영역 - 아직 DTO에 없으니 자리만 잡아두기 */}
-      <section className="border rounded p-4">
-        <div className="text-sm text-gray-500 mb-2">사진</div>
-        <div className="w-full h-56 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-          사진 데이터는 아직 없음 (나중에 photo 필드 추가)
-        </div>
-      </section>
+      {data.images.map((image) => (
+        <section key={image.id} className="border rounded p-4 mb-6">
+          {/* 이미지 영역 */}
+          <div className="text-sm text-gray-500 mb-2">
+            사진 #{image.order + 1}
+          </div>
 
-      {/* 아이템 목록 */}
-      <section className="border rounded p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">판매 아이템</h2>
-          <span className="text-sm text-gray-500">
-            총 {listing.items?.length ?? 0}개
-          </span>
-        </div>
+          <div className="w-full h-56 bg-gray-100 flex items-center justify-center text-gray-400 text-sm mb-4">
+            {image.imageUrl ? (
+              <img
+                src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${image.imageUrl}`}
+                alt={`image-${image.id}`}
+                className="h-full object-contain"
+              />
+            ) : (
+              "사진 데이터는 아직 없음"
+            )}
+          </div>
 
-        {listing.items?.length ? (
-          <ul className="space-y-2">
-            {listing.items.map((item) => (
-              <ListingItemRow key={item.id} item={item} />
-            ))}
-          </ul>
-        ) : (
-          <div className="text-sm text-gray-500">등록된 아이템이 없습니다.</div>
-        )}
-      </section>
+          {/* 아이템 리스트 */}
+          <div>
+            <h3 className="font-semibold mb-2">이 사진에 포함된 카드 정보</h3>
+
+            {image.items.length === 0 && (
+              <p className="text-gray-400 text-sm">등록된 아이템이 없습니다.</p>
+            )}
+
+            <ul className="space-y-3">
+              {image.items.map((item) => (
+                <ListingItemRow item={item} />
+              ))}
+            </ul>
+          </div>
+        </section>
+      ))}
 
       {/* 설명 / 비고가 있으면 여기에 섹션 하나 더 두면 됨 */}
     </main>
@@ -128,35 +138,24 @@ function StatusBadge({ status }: { status: ListingStatus }) {
 }
 
 // 아이템 1줄씩 렌더링
-function ListingItemRow({ item }: { item: ListingItemResponseDto }) {
+function ListingItemRow({ item }: { item: ListingImageItemResponseDto }) {
   // 실제 DTO에 맞게 필드 수정하면 됨
-  const typeLabel =
-    item.type === "CARD"
-      ? "카드"
-      : item.type === "ACCESSORY"
-      ? "악세서리"
-      : item.type === "OTHER"
-      ? "기타"
-      : "아이템";
-
   return (
-    <li className="border rounded p-2 flex items-center justify-between text-sm">
-      <div className="space-y-1">
-        <div className="font-medium">
-          {typeLabel} #{item.id}
-        </div>
-        {item.note && (
-          <div className="text-gray-500 text-xs">메모: {item.note}</div>
-        )}
+    <li key={item.id} className="border rounded p-3 bg-white shadow-sm">
+      <div className="flex justify-between items-center">
+        <div className="font-medium text-gray-800">코드: {item.infoId}</div>
+        <div className="text-sm text-gray-500">수량: {item.quantity}장</div>
       </div>
-      <div className="text-right space-y-1">
-        {item.price !== undefined && item.price !== null && (
-          <div className="font-semibold">{item.price.toLocaleString()}원</div>
-        )}
-        {item.quantity !== undefined && (
-          <div className="text-gray-500 text-xs">수량: {item.quantity}</div>
-        )}
+
+      <div className="text-gray-600 text-sm mt-1">상태: {item.condition}</div>
+
+      <div className="text-gray-600 text-sm">
+        가격: {item.pricePerUnit.toLocaleString()}원
       </div>
+
+      {item.detail && (
+        <div className="text-gray-500 text-sm mt-1">{item.detail}</div>
+      )}
     </li>
   );
 }
