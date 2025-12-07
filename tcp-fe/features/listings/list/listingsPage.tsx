@@ -1,7 +1,6 @@
 "use client";
 
-import { useListings } from "@/hooks/useListings";
-
+import { useListings } from "./hooks/useListings";
 export default function ListingsPage() {
   // 일단은 '전체' 상태, page=1 고정
   const { data, isLoading, error } = useListings({ page: 1, size: 20 });
@@ -30,7 +29,7 @@ export default function ListingsPage() {
 }
 
 type ListingCardProps = {
-  listing: import("@/lib/api/listings").ListingSummary;
+  listing: import("@/lib/api/listings/types").ListingSummary;
 };
 
 function ListingCard({ listing }: ListingCardProps) {

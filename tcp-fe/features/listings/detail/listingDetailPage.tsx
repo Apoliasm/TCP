@@ -1,6 +1,6 @@
 "use client";
 
-import { useListing } from "../hooks/useListing";
+import { useListing } from "./hooks/useListing";
 import {
   ListingStatus,
   ListingItemResponseDto,

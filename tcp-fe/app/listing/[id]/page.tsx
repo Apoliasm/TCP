@@ -1,7 +1,5 @@
 "use server";
-
-import ListingDetailPage from "@/features/listings/detail/components/listingDetailPage";
-import { useParams, useRouter } from "next/navigation";
+import ListingDetailPage from "@/features/listings/detail/listingDetailPage";
 
 type Props = { params: { id: string } };
 // app/listings/[id]/page.tsx
