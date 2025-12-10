@@ -51,7 +51,6 @@ export default function ListingDetailPage({ id }: Props) {
 
   return (
     <main className="p-8 space-y-6">
-      {/* 상단 헤더 */}
       <header className="space-y-2">
         <button
           onClick={() => {
@@ -101,7 +100,7 @@ export default function ListingDetailPage({ id }: Props) {
 
             <ul className="space-y-3">
               {image.items.map((item) => (
-                <ListingItemRow item={item} />
+                <ListingItemRow key={item.id} item={item} />
               ))}
             </ul>
           </div>

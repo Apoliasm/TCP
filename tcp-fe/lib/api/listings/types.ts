@@ -1,4 +1,8 @@
-export type ListingStatus = "ON_SALE" | "RESERVED" | "SOLD";
+export enum ListingStatus {
+  ON_SALE = "ON_SALE",
+  RESERVED = "RESERVED",
+  SOLD = "SOLD",
+}
 
 export type ListingSummary = {
   id: number;
@@ -36,11 +40,8 @@ export type ListingImageItemResponseDto = {
  * 상세 조회에서 내려오는 "이미지 한 장 + 그 밑의 items" 타입
  */
 export type ListingImageResponseDto = {
-  id: number;
-  listingId: number;
-  imageUrl: string;
+  id?: number;
   order: number;
-  items: ListingImageItemResponseDto[];
 };
 
 /**
@@ -61,7 +62,11 @@ export type ListingResponseDto = {
  */
 
 // 사진 하나 + 그 밑에 묶인 아이템들
-export type ItemType = "CARD" | "ACCESSORY" | "OTHER";
+export enum ListingItemType {
+  CARD = "CARD",
+  ACCESSORY = "ACCESSORY",
+  OTHER = "OTHER",
+}
 
 export interface CardInfoResponseDto {
   id: number; // ListingItem id
@@ -79,17 +84,21 @@ export interface CardInfoResponseDto {
   updatedAt?: string;
 }
 
-export interface ImageGroupDraft {
-  localId: string; // 프론트에서만 쓰는 임시 ID (uuid or index)
-  file: File | null; // 업로드 전 로컬 파일
-  previewUrl: string; // URL.createObjectURL(file) 결과
-  listingImageId?: number; // 서버에 업로드 후 받은 ID
-  order: number;
+export type CreateListingItemRequest = {
+  listingImageId?: number;
+  type: ListingItemType;
+  // cardInfo / accessoryInfo는 나중에 붙일 예정이니 일단 생략
+  detail?: string;
+  condition?: string;
+  quantity: number;
+  pricePerUnit: number;
+};
 
-  items: CardInfoResponseDto[];
-}
-
-export interface ListingDraft {
+export type CreateListingRequest = {
   title: string;
-  images: ImageGroupDraft[];
-}
+  sellerId: number;
+  status?: ListingStatus;
+  items: CreateListingItemRequest[];
+  images: ListingImageResponseDto[];
+  // images 필드는 선택사항이라 지금은 생략하거나 추후 이미지 업로드 붙일 때 추가
+};

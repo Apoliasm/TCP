@@ -1,0 +1,96 @@
+// lib/api/listings/api.ts
+
+import { json } from "stream/consumers";
+import {
+  CreateListingRequest,
+  CreateListingItemRequest,
+  ListingStatus,
+  ListingImageResponseDto,
+} from "./types";
+import { ListingDraft } from "@/features/listings/post/types/types";
+import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+
+function mapDraftToCreateListingRequest(
+  draft: ListingDraft,
+  sellerId: number
+): CreateListingRequest {
+  const items: CreateListingItemRequest[] = draft.images.flatMap((image) =>
+    image.items.map((item) => ({
+      listingImageId: image.listingImageId, // 아직 없으면 undefined로 감
+      type: item.type,
+      detail: item.detail || undefined,
+      condition: item.condition || undefined,
+      quantity: item.quantity,
+      pricePerUnit: item.pricePerUnit,
+    }))
+  );
+  const images: ListingImageResponseDto[] = draft.images
+    .filter((img) => img.listingImageId != null)
+    .map((img) => ({
+      id: img.listingImageId, // 실제 Dto에 맞게 필드명 조정
+      order: img.order,
+    }));
+
+  return {
+    title: draft.title,
+    sellerId,
+    status: ListingStatus.ON_SALE,
+    items,
+    images: images,
+  };
+}
+
+export async function createListingFromDraft(
+  draft: ListingDraft,
+  options: { sellerId: number; status?: string } // ListingStatus 써도 됨
+) {
+  const payload = mapDraftToCreateListingRequest(draft, options.sellerId);
+  console.log(payload);
+  if (options.status) {
+    (payload as any).status = options.status;
+  }
+
+  const res = await fetch(`${BASE_URL}/listings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let message = "게시글 등록에 실패했습니다.";
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch (_) {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  return res.json(); // 필요하면 타입 붙여서 ListingResponseDto 등으로
+}
+
+export async function postListingImage(order: number, file: File) {
+  const formData = new FormData();
+  formData.append("order", String(order));
+  formData.append("file", file);
+
+  const res = await fetch(`${BASE_URL}/listing-images`, {
+    method: "POST",
+    body: formData,
+    // ⚠️ Content-Type 은 직접 지정하지 않는다!
+  });
+
+  if (!res.ok) {
+    throw new Error(`failed to upload listing image: ${res.status}`);
+  }
+
+  // 백엔드 응답 스펙에 맞게 타입은 한 번 정의해두면 좋음
+  const data: { id: number; url?: string } = await res.json();
+  return data;
+}

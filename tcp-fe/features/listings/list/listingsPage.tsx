@@ -10,20 +10,13 @@ export default function ListingsPage() {
 
   return (
     <main className="p-8 space-y-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">판매글 목록</h1>
-        {/* 나중에 상태 필터 버튼, 검색바 등 추가 */}
-      </header>
-
-      <section className="space-y-2">
-        {data && data.length > 0 ? (
-          data.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))
-        ) : (
-          <div>등록된 판매글이 없습니다.</div>
-        )}
-      </section>
+      {data && data.length > 0 ? (
+        data.map((listing) => (
+          <ListingCard key={listing.id} listing={listing} />
+        ))
+      ) : (
+        <div>등록된 판매글이 없습니다.</div>
+      )}
     </main>
   );
 }
