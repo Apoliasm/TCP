@@ -28,6 +28,12 @@ export type ListingItemDraft = {
   rarity?: Rarity;
 };
 
+export type ItemInfoDraft = {
+  name: string;
+  type: ListingItemType;
+  code?: string;
+  rarity?: Rarity;
+};
 export enum Rarity {
   N,
   R,

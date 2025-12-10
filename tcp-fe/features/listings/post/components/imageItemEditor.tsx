@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { ImageGroupDraft, ListingItemDraft, Rarity } from "../types/types";
-import { ListingItemType } from "@/lib/api/listings/types";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ImageGroupDraft,
+  ItemInfoDraft,
+  ListingItemDraft,
+  Rarity,
+} from "../types/types";
+import { ItemInfoResponseDto, ListingItemType } from "@/lib/api/listings/types";
+import { searchItemByname } from "@/lib/api/listings/queries";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -313,6 +319,37 @@ function TypeAndCardNameStep({
   onChange,
   onNext,
 }: TypeAndCardNameStepProps) {
+  const [isInput, setIsInput] = useState<boolean>(false);
+  const [searchResult, setSearchResult] = useState<ItemInfoResponseDto[]>([]);
+  const [query, setQuery] = useState("");
+  const [cardCode, setCardCode] = useState("");
+  const onClick = ({ name, code, rarity }: ItemInfoDraft) => {
+    setIsInput(true);
+    setQuery(name);
+    if (code) setCardCode(code);
+    onChange({ rarity: rarity as Rarity, cardName: name });
+  };
+
+  async function searchQuery(value: string) {
+    const result = await searchItemByname({ nameQuery: value, codeQuery: "" });
+    if (result) setSearchResult([...result]);
+  }
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setSearchResult([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      // query가 바뀐 후 300ms 동안 추가 입력이 없으면 실행
+      searchQuery(query);
+    }, 300);
+
+    // query가 다시 바뀌면 이전 타이머 취소
+    return () => clearTimeout(timer);
+  }, [query]);
+
   return (
     <div className="space-y-3 transition-opacity duration-300">
       <div className="flex items-center justify-between">
@@ -345,17 +382,19 @@ function TypeAndCardNameStep({
       </div>
 
       {/* 카드명 입력 + 검색 결과 (CARD일 때 추천) */}
+
       <div className="space-y-2">
         <p className="text-xs text-slate-500">
           카드 이름을 입력하면 추천 결과가 나타납니다.
           <br />
           (카드가 아니라면 간단한 품목 이름을 적어주세요.)
         </p>
-
         <input
           type="text"
-          value={item.cardName}
-          onChange={(e) => onChange({ cardName: e.target.value })}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
           placeholder={
             item.type === ListingItemType.CARD
               ? "예) 푸른 눈의 백룡"
@@ -363,21 +402,24 @@ function TypeAndCardNameStep({
           }
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
         />
-
-        {item.type === ListingItemType.CARD && (
-          <ul className="max-h-32 overflow-y-auto rounded-lg border border-slate-200 bg-white text-xs shadow-sm">
-            {MOCK_SEARCH_RESULTS.map((name) => (
-              <li
-                key={name}
-                className="cursor-pointer px-3 py-2 hover:bg-slate-50"
-                onClick={() => onChange({ cardName: name })}
-              >
-                {name}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
+      {isInput ? (
+        <div className="space-y-2">
+          <p className="text-xs text-slate-500">코드네임</p>
+
+          <input
+            type="text"
+            value={cardCode}
+            onChange={(e) => {
+              setCardCode(e.target.value);
+            }}
+            placeholder={"ROTA-KR024"}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-300"
+          />
+        </div>
+      ) : (
+        <SearchResultViewer results={searchResult} onChange={onClick} />
+      )}
 
       <div className="flex justify-end gap-2 pt-1">
         <button
@@ -390,6 +432,64 @@ function TypeAndCardNameStep({
       </div>
     </div>
   );
+}
+
+type SearchResultViewerProps = {
+  results: ItemInfoResponseDto[];
+  onChange: ({ name, type, code, rarity }: ItemInfoDraft) => void;
+};
+function SearchResultViewer({ results, onChange }: SearchResultViewerProps) {
+  if (results.length !== 0) {
+    return (
+      <ul className="max-h-32 overflow-y-auto rounded-lg border border-slate-200 bg-white text-xs shadow-sm">
+        {results
+          .map((result) => {
+            const name =
+              result.cardInfo?.cardName?.name ??
+              result.cardInfo?.candidate?.name ??
+              result.accessoryInfo?.name ??
+              "";
+
+            return {
+              id: result.id,
+              name: name,
+              type: result.type,
+              ...(result.cardInfo?.cardCode && {
+                code: result.cardInfo.cardCode,
+              }),
+              ...(result.cardInfo?.rarity && {
+                rarity: result.cardInfo.rarity,
+              }),
+            };
+          })
+          .map((item) => (
+            <li
+              key={item.id}
+              className="cursor-pointer px-3 py-2 hover:bg-slate-50 flex justify-between items-center"
+              onClick={() =>
+                onChange({
+                  name: item.name,
+                  type: item.type,
+                  ...(item.code && { code: item.code }),
+                  ...(item.rarity && { rarity: item.rarity }),
+                })
+              }
+            >
+              {/* 카드명 */}
+              <span className="text-sm text-slate-800">{item.name}</span>
+
+              {/* 코드 + 레어도 */}
+              <span className="text-xs text-slate-500 flex gap-2">
+                {item.code && <span>{item.code}</span>}
+                {item.rarity && (
+                  <span className="font-medium">{item.rarity}</span>
+                )}
+              </span>
+            </li>
+          ))}
+      </ul>
+    );
+  }
 }
 
 /* -------------------- Step 2: 레어도 선택 -------------------- */
@@ -407,7 +507,7 @@ export const RARITY_OPTIONS = [
 ] as const;
 
 type RarityStepProps = {
-  value?: Rarity;
+  value: Rarity;
   isCard: boolean;
   onChange: (value?: Rarity) => void;
   onPrev: () => void;
@@ -436,7 +536,9 @@ function RarityStep({
 
           <div className="flex flex-wrap gap-2">
             {RARITY_OPTIONS.map(({ label, value: rarityValue }) => {
-              const active = value === rarityValue;
+              const rarityInput = value ? Rarity[value] : Rarity.N;
+              const active = rarityInput === rarityValue;
+
               return (
                 <button
                   key={rarityValue}

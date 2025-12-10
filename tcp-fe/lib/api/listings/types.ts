@@ -1,3 +1,5 @@
+import { Rarity } from "@/features/listings/post/types/types";
+
 export enum ListingStatus {
   ON_SALE = "ON_SALE",
   RESERVED = "RESERVED",
@@ -68,21 +70,51 @@ export enum ListingItemType {
   OTHER = "OTHER",
 }
 
+export enum Nation {
+  KR = "KR",
+  JP = "JP",
+  EN = "EN",
+  OTHER = "Other",
+}
 export interface CardInfoResponseDto {
   id: number; // ListingItem id
   listingId: number;
   listingImageId: number;
-  infoId: number;
-
+  itemInfoId: number;
+  cardNameId: number | null;
+  cardCode: string;
+  nation: Nation;
+  rarity: Rarity;
   detail: string; // 설명
-  condition: string; // 상태(EX, NM 등)
-  quantity: number; // 수량
-  pricePerUnit: number; // 가격
+  candidate: CandidateResponseDto | null;
+  cardName: CardNameResponseDto | null;
 
   // 날짜는 받아오되, createdAt / updatedAt은 프론트에서 쓰지 않아도 됨
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface CandidateResponseDto {
+  id: number;
+  name: string;
+}
+
+export interface CardNameResponseDto {
+  id: number;
+  name: string;
+}
+
+export type AccessoryInfoResponseDto = {
+  id: number;
+  name: string;
+};
+
+export type ItemInfoResponseDto = {
+  id: number;
+  type: ListingItemType;
+  cardInfo: CardInfoResponseDto | null;
+  accessoryInfo: AccessoryInfoResponseDto | null;
+};
 
 export type CreateListingItemRequest = {
   listingImageId?: number;
@@ -102,3 +134,8 @@ export type CreateListingRequest = {
   images: ListingImageResponseDto[];
   // images 필드는 선택사항이라 지금은 생략하거나 추후 이미지 업로드 붙일 때 추가
 };
+
+export interface SearchCardDto {
+  nameQuery: string;
+  codeQuery: string;
+}

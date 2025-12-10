@@ -1,9 +1,12 @@
+import { BASE_URL } from "../url";
 import {
-  ListingItemResponseDto,
   FetchListingsParams,
   ListingStatus,
   ListingSummary,
-  ResponseListingDto,
+  SearchCardDto,
+  CardInfoResponseDto,
+  ItemInfoResponseDto,
+  ListingResponseDto,
 } from "./types";
 export async function fetchListings(
   params: FetchListingsParams = {}
@@ -14,13 +17,10 @@ export async function fetchListings(
   //   if (params.page) query.set("page", String(params.page));
   //   if (params.size) query.set("size", String(params.size));
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/listings?${query.toString()}`,
-    {
-      // 필요하면 credentials, headers 등 추가
-      cache: "no-store", // React Query가 캐싱하므로 fetch는 매번 fresh로
-    }
-  );
+  const res = await fetch(`${BASE_URL}/listings?${query.toString()}`, {
+    // 필요하면 credentials, headers 등 추가
+    cache: "no-store", // React Query가 캐싱하므로 fetch는 매번 fresh로
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch listings");
@@ -30,17 +30,27 @@ export async function fetchListings(
 
 export async function fetchListingById(
   id: number
-): Promise<ResponseListingDto> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/listings/${id}`,
-    {
-      cache: "no-store", // 캐싱은 React Query가 관리
-    }
-  );
+): Promise<ListingResponseDto> {
+  const res = await fetch(`${BASE_URL}/listings/${id}`, {
+    cache: "no-store", // 캐싱은 React Query가 관리
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch listing");
   }
 
   return res.json();
+}
+
+export async function searchItemByname({
+  nameQuery,
+  codeQuery,
+}: SearchCardDto) {
+  const queryString = new URLSearchParams();
+  queryString.set("nameQuery", nameQuery);
+  const res: ItemInfoResponseDto[] = await fetch(
+    `${BASE_URL}/items/info?${queryString}`
+  ).then((res) => res.json());
+
+  return res;
 }
