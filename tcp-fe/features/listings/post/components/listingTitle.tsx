@@ -4,12 +4,10 @@ import { ListingDraft } from "../types/types";
 type ListingTitleValue = {
   title: string;
   // ListingDraft에 content가 있다면 이걸로 확장 가능
-  content?: string;
 };
 
 type ListingTitleActions = {
   setTitle: (title: string) => void;
-  setContent?: (content: string) => void;
 };
 
 type ListingTitleProps = {
@@ -18,11 +16,11 @@ type ListingTitleProps = {
 };
 
 export function ListingTitle({ value, actions }: ListingTitleProps) {
-  const { title, content = "" } = value;
-  const { setTitle, setContent } = actions;
+  const { title } = value;
+  const { setTitle } = actions;
 
   return (
-    <section>
+    <section className="bg-slate-50 rounded-xl p-6 space-y-4 border border-slate-200">
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}

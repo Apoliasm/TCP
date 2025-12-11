@@ -28,7 +28,7 @@ export type ListingItemDraft = {
   rarity?: Rarity;
 };
 
-export type ItemInfoDraft = {
+export type ItemSearchInfo = {
   name: string;
   type: ListingItemType;
   code?: string;
@@ -44,4 +44,24 @@ export enum Rarity {
   UPR,
   NPR,
   Other,
+}
+
+export type EditorStep = 1 | 2 | 3 | 4 | 5;
+
+export interface ImageItemEditorState {
+  itemDraft: ListingItemDraft;
+  step: EditorStep;
+  isNewItem: boolean;
+  items: ListingItemDraft[];
+  selectedImageId: string | null;
+}
+
+export interface EditorStepPropsActions {
+  onChange: (partial: Partial<ListingItemDraft>) => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+export interface EditorStepPropsValue {
+  itemDraft: ListingItemDraft;
 }
