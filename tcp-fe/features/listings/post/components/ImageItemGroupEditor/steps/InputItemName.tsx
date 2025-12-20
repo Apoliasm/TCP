@@ -69,6 +69,9 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
     // query가 다시 바뀌면 이전 타이머 취소
     return () => clearTimeout(timer);
   }, [query]);
+  useEffect(() => {
+    updateItemDraft({ cardCode: cardCode });
+  }, [cardCode]);
 
   return (
     <div className="space-y-3 transition-opacity duration-300">

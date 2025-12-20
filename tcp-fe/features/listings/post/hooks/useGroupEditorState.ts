@@ -8,6 +8,7 @@ import {
   ItemEditAction,
   ListingItemCommon,
   ListingItemCard,
+  RARITY,
 } from "../types/types";
 import { ListingItemType } from "@/lib/api/listings/types";
 
@@ -23,7 +24,7 @@ type Action =
   | { action: "PREV_STEP" }
   | { action: "SET_ITEM"; item: Partial<ListingItemDraft> }
   | { action: "SET_ACTION_ADD" }
-  | { action: "SET_ACTION_UPDATE" }
+  | { action: "SET_ACTION_UPDATE"; item: ListingItemDraft }
   | { action: "SET_ACTION_DELETE" }; // 🔥 부분 업데이트
 
 function createEmptyItemDraft(
@@ -47,7 +48,7 @@ function createEmptyItemDraft(
         ...common,
         type: ListingItemType.CARD,
         cardCode: "",
-        rarity: Rarity.N,
+        rarity: RARITY.N,
       };
     case ListingItemType.ACCESSORY:
       return { ...common, type: ListingItemType.ACCESSORY };
@@ -100,10 +101,14 @@ function reducer(state: GroupEditorState, action: Action): GroupEditorState {
     case "SET_ACTION_ADD":
       return initItemDraft(state, "ADD");
     case "SET_ACTION_UPDATE":
-      return initItemDraft(state, "UPDATE");
+      return {
+        ...state,
+        editAction: "UPDATE",
+        step: 1 as EditorStep,
+        itemDraft: action.item,
+      };
     case "SET_ACTION_DELETE":
-      return initItemDraft(state, "ADD");
-
+      return state;
     default:
       return state;
   }
@@ -121,7 +126,8 @@ export function useGroupEditorState(imageLocalId: string) {
   const setItem = (item: Partial<ListingItemDraft>) =>
     dispatch({ action: "SET_ITEM", item: item });
   const setAdd = () => dispatch({ action: "SET_ACTION_ADD" });
-  const setUpdate = () => dispatch({ action: "SET_ACTION_UPDATE" });
+  const setUpdate = (item: ListingItemDraft) =>
+    dispatch({ action: "SET_ACTION_UPDATE", item });
   const setType = (itemType: ListingItemType) =>
     dispatch({ action: "SET_TYPE", itemType });
   return {

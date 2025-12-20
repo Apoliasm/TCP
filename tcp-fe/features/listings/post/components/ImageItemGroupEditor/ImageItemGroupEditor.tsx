@@ -1,12 +1,11 @@
 // ImageItemGroupEditor.tsx
 "use client";
 
-import { Dispatch, useState } from "react";
+import { Dispatch } from "react";
 import {
   ListingItemDraft,
   ImageGroupDraft,
   GroupEditDispatch,
-  EditorStepPropsValue,
 } from "../../types/types";
 import { ListingItemType } from "@/lib/api/listings/types";
 import { HeaderSection } from "./sections/HeaderSection";
@@ -17,10 +16,7 @@ import { SetRarity } from "./steps/SetRarity";
 import { SetPrice } from "./steps/SetPrice";
 import { InputItemDetail } from "./steps/InputItemDetail";
 import { SetQuantity } from "./steps/SetQuantity";
-import {
-  GroupEditor,
-  useGroupEditorState,
-} from "../../hooks/useGroupEditorState";
+import { useGroupEditorState } from "../../hooks/useGroupEditorState";
 type ImageItemEditorValue = {
   group: ImageGroupDraft;
   stepIndex: number;
@@ -48,12 +44,14 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
     state,
   } = useGroupEditorState(group.localId);
 
-  const onStartUpdateItem = () => {
-    setUpdate();
+  const onStartUpdateItem = (item: ListingItemDraft) => {
+    setUpdate(item);
   };
 
   const onDeleteItem = (del: ListingItemDraft) => {
-    group.items = group.items.filter((item) => item.localId !== del.localId);
+    group.items = group.items.filter((item) => {
+      del.name === item.name && del.type === item.type;
+    });
     setAdd();
     dispatchGroups({ action: "UPDATE", item: group });
   };
@@ -97,7 +95,6 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
             value={{
               itemDraft,
               editAction,
-              isCard: itemDraft.type === ListingItemType.CARD,
             }}
             actions={{
               onChange: setItem,
