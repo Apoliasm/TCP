@@ -5,7 +5,7 @@ import { Dispatch, useState } from "react";
 import {
   ListingItemDraft,
   ImageGroupDraft,
-  GroupEditDisPatch,
+  GroupEditDispatch,
   EditorStepPropsValue,
 } from "../../types/types";
 import { ListingItemType } from "@/lib/api/listings/types";
@@ -17,7 +17,6 @@ import { SetRarity } from "./steps/SetRarity";
 import { SetPrice } from "./steps/SetPrice";
 import { InputItemDetail } from "./steps/InputItemDetail";
 import { SetQuantity } from "./steps/SetQuantity";
-import { initItemDraft } from "../../utils/const";
 import {
   GroupEditor,
   useGroupEditorState,
@@ -27,7 +26,7 @@ type ImageItemEditorValue = {
   stepIndex: number;
 };
 type ImageItemGroupEditorActions = {
-  dispatchGroups: Dispatch<GroupEditDisPatch>;
+  dispatchGroups: Dispatch<GroupEditDispatch>;
 };
 
 type Props = {
@@ -38,16 +37,16 @@ type Props = {
 export function ImageItemGroupEditor({ value, actions }: Props) {
   const { group, stepIndex } = value;
   const { dispatchGroups } = actions;
-  const { goNext, goPrev, setAdd, setItem, setStep, setUpdate, state } =
-    useGroupEditorState({
-      itemDraft: {
-        ...initItemDraft,
-        listingImageId: group.listingImageId,
-      },
-      imageLocalId: group.localId,
-      step: 1,
-      editAction: "ADD",
-    });
+  const {
+    goNext,
+    goPrev,
+    setAdd,
+    setItem,
+    setStep,
+    setUpdate,
+    setType,
+    state,
+  } = useGroupEditorState(group.localId);
 
   const onStartUpdateItem = () => {
     setUpdate();
@@ -86,6 +85,7 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
             actions={{
               updateItemDraft: setItem,
               goNext,
+              setType,
             }}
           />
         );

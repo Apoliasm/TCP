@@ -1,14 +1,14 @@
 // sections/HeaderSection.tsx
 
 import { Dispatch } from "react";
-import { GroupEditDisPatch, ImageGroupDraft } from "../../../types/types";
+import { GroupEditDispatch, ImageGroupDraft } from "../../../types/types";
 
 type HeaderSectionValue = {
   group: ImageGroupDraft;
 };
 
 type HeaderSectionActions = {
-  dispatchGroups: Dispatch<GroupEditDisPatch>;
+  dispatchGroups: Dispatch<GroupEditDispatch>;
 };
 
 type HeaderSectionProps = {
