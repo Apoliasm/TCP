@@ -7,7 +7,10 @@ import {
   ListingStatus,
   ListingImageResponseDto,
 } from "./types";
-import { ListingDraft } from "@/features/listings/post/types/types";
+import {
+  ListingDraft,
+  ListingItemDraft,
+} from "@/features/listings/post/types/types";
 import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
 
 const BASE_URL =
@@ -21,12 +24,14 @@ function mapDraftToCreateListingRequest(
     image.items.map((item) => ({
       listingImageId: image.listingImageId, // 아직 없으면 undefined로 감
       type: item.type,
-      detail: item.detail || undefined,
-      condition: item.condition || undefined,
+      infoId: item.infoId,
+      detail: item.detail,
+      condition: item.condition,
       quantity: item.quantity,
       pricePerUnit: item.pricePerUnit,
     }))
   );
+  console.log(draft.images);
   const images: ListingImageResponseDto[] = draft.images
     .filter((img) => img.listingImageId != null)
     .map((img) => ({
@@ -34,6 +39,13 @@ function mapDraftToCreateListingRequest(
       order: img.order,
     }));
 
+  console.log({
+    title: draft.title,
+    sellerId,
+    status: ListingStatus.ON_SALE,
+    items,
+    images: images,
+  });
   return {
     title: draft.title,
     sellerId,

@@ -1,8 +1,13 @@
 // ImageItemGroupEditor.tsx
 "use client";
 
-import { useState } from "react";
-import { ListingItemDraft, ImageGroupDraft } from "../../types/types";
+import { Dispatch, useState } from "react";
+import {
+  ListingItemDraft,
+  ImageGroupDraft,
+  GroupEditDisPatch,
+  EditorStepPropsValue,
+} from "../../types/types";
 import { ListingItemType } from "@/lib/api/listings/types";
 import { HeaderSection } from "./sections/HeaderSection";
 import { ItemListSection } from "./sections/ItemListSection";
@@ -18,12 +23,11 @@ import {
   useGroupEditorState,
 } from "../../hooks/useGroupEditorState";
 type ImageItemEditorValue = {
-  image: ImageGroupDraft;
+  group: ImageGroupDraft;
   stepIndex: number;
 };
 type ImageItemGroupEditorActions = {
-  updateGroup: (group: ImageGroupDraft) => void;
-  removeGroup: (group: ImageGroupDraft) => void;
+  dispatchGroups: Dispatch<GroupEditDisPatch>;
 };
 
 type Props = {
@@ -32,34 +36,44 @@ type Props = {
 };
 
 export function ImageItemGroupEditor({ value, actions }: Props) {
-  const { image, stepIndex } = value;
-  const { updateGroup, removeGroup } = actions;
-  const {
-    state,
-    goNext,
-    goPrev,
-    initNewItem,
-    removeItem,
-    pushDraft,
-    setDraft,
-    setStep,
-    updateItem,
-  } = useGroupEditorState({
-    isNewItem: false,
-    itemDraft: initItemDraft,
-    items: [],
-    selectedImageId: null,
-    step: 1,
-  });
-  const { isNewItem, itemDraft, items, selectedImageId, step } = state;
-  // 위자드 상태
-  const handleSaveItem = (itemDraft: ListingItemDraft) => {
-    pushDraft(itemDraft);
-    updateGroup({
-      ...image,
-      items: state.items,
+  const { group, stepIndex } = value;
+  const { dispatchGroups } = actions;
+  const { goNext, goPrev, setAdd, setItem, setStep, setUpdate, state } =
+    useGroupEditorState({
+      itemDraft: {
+        ...initItemDraft,
+        listingImageId: group.listingImageId,
+      },
+      imageLocalId: group.localId,
+      step: 1,
+      editAction: "ADD",
     });
+
+  const onStartUpdateItem = () => {
+    setUpdate();
   };
+
+  const onDeleteItem = (del: ListingItemDraft) => {
+    group.items = group.items.filter((item) => item.localId !== del.localId);
+    setAdd();
+    dispatchGroups({ action: "UPDATE", item: group });
+  };
+
+  const updateGroup = (cur: ListingItemDraft) => {
+    const nextItems =
+      editAction === "ADD"
+        ? [...group.items, cur]
+        : group.items.map((item) =>
+            item.localId === cur.localId ? cur : item
+          );
+
+    const nextGroup: ImageGroupDraft = { ...group, items: nextItems };
+
+    dispatchGroups({ action: "UPDATE", item: nextGroup });
+    setAdd();
+  };
+
+  const { imageLocalId, itemDraft, step, editAction } = state;
 
   /** 🧩 스텝 단계별 렌더링 */
   const renderStep = () => {
@@ -70,7 +84,7 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
           <InputItemName
             value={{ item: itemDraft }}
             actions={{
-              updateItemDraft: setDraft,
+              updateItemDraft: setItem,
               goNext,
             }}
           />
@@ -81,11 +95,12 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
         return (
           <SetRarity
             value={{
-              itemDraft: itemDraft,
+              itemDraft,
+              editAction,
               isCard: itemDraft.type === ListingItemType.CARD,
             }}
             actions={{
-              onChange: setDraft,
+              onChange: setItem,
               onPrev: goPrev,
               onNext: goNext,
             }}
@@ -96,9 +111,9 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
       case 3:
         return (
           <SetQuantity
-            value={{ itemDraft: itemDraft }}
+            value={{ itemDraft, editAction }}
             actions={{
-              onChange: setDraft,
+              onChange: setItem,
               onPrev: goPrev,
               onNext: goNext,
             }}
@@ -109,9 +124,9 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
       case 4:
         return (
           <SetPrice
-            value={{ itemDraft: itemDraft }}
+            value={{ itemDraft, editAction }}
             actions={{
-              onChange: setDraft,
+              onChange: setItem,
               onPrev: goPrev,
               onNext: goNext,
             }}
@@ -122,11 +137,11 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
       case 5:
         return (
           <InputItemDetail
-            value={{ itemDraft: itemDraft }}
+            value={{ itemDraft, editAction }}
             actions={{
               onPrev: goPrev,
-              onChange: setDraft,
-              onSave: handleSaveItem,
+              onChange: setItem,
+              onSave: updateGroup,
             }}
           />
         );
@@ -139,17 +154,17 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       {/* 상단 헤더: 그룹 번호, 삭제 버튼 등 */}
-      <HeaderSection value={{ image }} actions={{ onRemove: removeGroup }} />
+      <HeaderSection value={{ group }} actions={{ dispatchGroups }} />
 
       {/* 이미지 미리보기 */}
-      <ImagePreviewSection value={{ previewUrl: image.previewUrl }} />
+      <ImagePreviewSection value={{ previewUrl: group.previewUrl }} />
 
       {/* 이 이미지에 이미 등록된 아이템 리스트 */}
       <ItemListSection
-        value={{ image }}
+        value={{ items: group.items }}
         actions={{
-          onEditItem: updateItem,
-          onDeleteItem: removeItem,
+          onUpdateItem: onStartUpdateItem,
+          onDeleteItem: onDeleteItem,
         }}
       />
 

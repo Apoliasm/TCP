@@ -30,19 +30,23 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
 
   const [isInput, setIsInput] = useState<boolean>(false);
   const [searchResult, setSearchResult] = useState<ItemInfoResponseDto[]>([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(item.cardName);
   const [cardCode, setCardCode] = useState("");
 
-  const onClick = ({ name, code, rarity }: ItemSearchInfo) => {
+  const onClick = ({ name, code, rarity, id }: ItemSearchInfo) => {
     setIsInput(true);
     setQuery(name);
     if (code) setCardCode(code);
-    updateItemDraft({ rarity: rarity as Rarity, cardName: name });
+    updateItemDraft({ rarity: rarity as Rarity, cardName: name, infoId: id });
   };
 
   async function searchQuery(value: string) {
     const result = await searchItemByname({ nameQuery: value, codeQuery: "" });
-    if (result) setSearchResult([...result]);
+    if (result && result.length > 0) setSearchResult([...result]);
+    else if (result.length === 0) {
+      setIsInput(true);
+      updateItemDraft({ cardName: value });
+    }
   }
 
   useEffect(() => {
@@ -147,7 +151,7 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
 
 type SearchResultViewerProps = {
   results: ItemInfoResponseDto[];
-  onChange: ({ name, type, code, rarity }: ItemSearchInfo) => void;
+  onChange: ({ name, type, code, rarity, id }: ItemSearchInfo) => void;
 };
 
 function SearchResultViewer({ results, onChange }: SearchResultViewerProps) {
@@ -183,6 +187,7 @@ function SearchResultViewer({ results, onChange }: SearchResultViewerProps) {
               onChange({
                 name: item.name,
                 type: item.type,
+                id: item.id,
                 ...(item.code && { code: item.code }),
                 ...(item.rarity && { rarity: item.rarity }),
               })

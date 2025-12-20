@@ -1,18 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { ImageGroupDraft } from "../types/types";
+import { Dispatch, useRef, useState } from "react";
+import { GroupEditDisPatch, ImageGroupDraft } from "../types/types";
 import { ImageItemGroupEditor } from "./ImageItemGroupEditor/ImageItemGroupEditor";
-import { GroupEditor } from "../hooks/useGroupEditorState";
+import { postListingImage } from "@/lib/api/listings/mutations";
 
 type ListingEditorValue = {
-  images: ImageGroupDraft[];
+  groups: ImageGroupDraft[];
 };
 
 type ListingEditorActions = {
-  addGroup: (group: ImageGroupDraft) => void;
-  updateGroup: (group: ImageGroupDraft) => void;
-  removeGroup: (group: ImageGroupDraft) => void;
+  dispatchGroups: Dispatch<GroupEditDisPatch>;
 };
 
 type ListingEditorProps = {
@@ -21,8 +19,9 @@ type ListingEditorProps = {
 };
 
 export function ListingEditor({ value, actions }: ListingEditorProps) {
-  const { images } = value;
-  const { addGroup, updateGroup, removeGroup } = actions;
+  const { groups } = value;
+  const [imageOrder, setImageOrder] = useState(0);
+  const { dispatchGroups } = actions;
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -30,23 +29,25 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
     fileInputRef.current?.click();
   };
 
-  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const localId = crypto.randomUUID();
     const previewUrl = URL.createObjectURL(file);
-
+    const { id, url } = await postListingImage(imageOrder, file);
+    setImageOrder((prev) => prev + 1);
     const newGroup: ImageGroupDraft = {
       localId,
       file,
       previewUrl,
-      order: images.length,
+      imageUrl: url,
+      order: imageOrder,
+      listingImageId: id,
       items: [],
       // 필요하면 listingImageId 같은 필드도 여기서 undefined 로 초기화
     };
-
-    addGroup(newGroup);
+    dispatchGroups({ action: "ADD", item: newGroup });
 
     // 같은 파일 다시 선택 가능하도록 초기화
     e.target.value = "";
@@ -96,7 +97,7 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
         </div>
 
         {/* 이미지가 없을 때 안내 */}
-        {images.length === 0 && (
+        {groups.length === 0 && (
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
             아직 등록된 사진이 없습니다.
             <br />
@@ -107,13 +108,12 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
 
         {/* 이미지별 에디터 */}
         <div className="space-y-4">
-          {images.map((image, index) => (
+          {groups.map((group, index) => (
             <ImageItemGroupEditor
-              key={image.localId}
-              value={{ image, stepIndex: index + 1 }}
+              key={group.localId}
+              value={{ group, stepIndex: index + 1 }}
               actions={{
-                removeGroup,
-                updateGroup,
+                dispatchGroups,
               }}
             />
           ))}

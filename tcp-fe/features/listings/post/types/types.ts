@@ -6,7 +6,8 @@ export interface ImageGroupDraft {
   localId: string;
   file: File | null;
   previewUrl: string;
-  listingImageId?: number;
+  imageUrl?: string | undefined;
+  listingImageId: number;
   order: number;
   items: ListingItemDraft[];
 }
@@ -14,13 +15,15 @@ export interface ImageGroupDraft {
 export interface ListingDraft {
   title: string;
   // 필요하면 status 등도 여기로 확장 가능
-  images: ImageGroupDraft[];
+  groups: ImageGroupDraft[];
 }
 
 export type ListingItemDraft = {
-  localItemId: string; // 프론트용 임시 ID
+  localId: string; // 프론트용 임시 ID
   type: ListingItemType; // 'CARD' | 'ACCESSORY' | 'OTHER'
   cardName: string; // CARD일 때 카드 이름 검색용
+  listingImageId: number;
+  infoId?: number;
   detail: string; // 품목에 대한 자세한 설명
   condition: string; // 상태 설명 (ex. NM, 사용감 있음 등)
   quantity: number; // 갯수
@@ -31,6 +34,7 @@ export type ListingItemDraft = {
 export type ItemSearchInfo = {
   name: string;
   type: ListingItemType;
+  id: number;
   code?: string;
   rarity?: Rarity;
 };
@@ -48,12 +52,13 @@ export enum Rarity {
 
 export type EditorStep = 1 | 2 | 3 | 4 | 5;
 
-export interface ImageItemEditorState {
+type EditAction = "ADD" | "UPDATE" | "REMOVE";
+export type ItemEditAction = EditAction;
+export interface GroupEditorState {
   itemDraft: ListingItemDraft;
   step: EditorStep;
-  isNewItem: boolean;
-  items: ListingItemDraft[];
-  selectedImageId: string | null;
+  imageLocalId: string | null;
+  editAction: ItemEditAction;
 }
 
 export interface EditorStepPropsActions {
@@ -64,4 +69,11 @@ export interface EditorStepPropsActions {
 
 export interface EditorStepPropsValue {
   itemDraft: ListingItemDraft;
+  editAction: ItemEditAction;
 }
+
+type GroupEditAction = EditAction;
+export type GroupEditDisPatch = {
+  action: GroupEditAction;
+  item: ImageGroupDraft;
+};

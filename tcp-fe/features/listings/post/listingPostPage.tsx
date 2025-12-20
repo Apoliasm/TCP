@@ -8,16 +8,15 @@ import { useListingSubmit } from "./hooks/useListingSubmit";
 
 export function ListingPostPage() {
   const {
-    addGroup,
-    draft,
+    title,
+    groups,
+    dispatchGroups,
     isValid,
-    removeGroup,
-    reset,
+
     setTitle,
-    updateGroup,
   } = useListingDraft({
     title: "",
-    images: [],
+    groups: [],
   });
 
   const { isSubmitting, errorMessage, handleSubmit } = useListingSubmit();
@@ -26,24 +25,16 @@ export function ListingPostPage() {
     <main className="p-6 space-y-6">
       {/* 🔹 기본 정보 */}
 
-      <ListingTitle value={{ title: draft.title }} actions={{ setTitle }} />
+      <ListingTitle value={{ title }} actions={{ setTitle }} />
 
       {/* 🔹 내용 + 이미지 */}
-      <ListingEditor
-        value={{ images: draft.images }}
-        actions={{
-          addGroup,
-          updateGroup,
-          removeGroup,
-        }}
-      />
+      <ListingEditor value={{ groups }} actions={{ dispatchGroups }} />
 
       {/* 🔹 버튼 */}
       <section className="rounded-xl p-6 flex items-center justify-end gap-3">
         <button
           type="button"
           className="text-sm px-4 py-2 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 transition"
-          onClick={reset}
         >
           취소
         </button>
@@ -56,7 +47,7 @@ export function ListingPostPage() {
             "bg-slate-900 text-white hover:bg-slate-800",
             "disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed",
           ].join(" ")}
-          onClick={() => handleSubmit(draft, isValid, reset)}
+          onClick={() => {}}
         >
           게시글 등록
         </button>

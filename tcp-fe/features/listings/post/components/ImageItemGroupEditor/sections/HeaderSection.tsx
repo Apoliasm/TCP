@@ -1,13 +1,14 @@
 // sections/HeaderSection.tsx
 
-import { ImageGroupDraft } from "../../../types/types";
+import { Dispatch } from "react";
+import { GroupEditDisPatch, ImageGroupDraft } from "../../../types/types";
 
 type HeaderSectionValue = {
-  image: ImageGroupDraft;
+  group: ImageGroupDraft;
 };
 
 type HeaderSectionActions = {
-  onRemove: (group: ImageGroupDraft) => void;
+  dispatchGroups: Dispatch<GroupEditDisPatch>;
 };
 
 type HeaderSectionProps = {
@@ -16,9 +17,9 @@ type HeaderSectionProps = {
 };
 
 export function HeaderSection({ value, actions }: HeaderSectionProps) {
-  const { image } = value;
-  const imageIndex = image.order;
-  const { onRemove } = actions;
+  const { group } = value;
+  const imageIndex = group.order;
+  const { dispatchGroups } = actions;
 
   return (
     <header className="mb-3 flex items-center justify-between">
@@ -30,7 +31,7 @@ export function HeaderSection({ value, actions }: HeaderSectionProps) {
       </div>
       <button
         type="button"
-        onClick={() => onRemove(image)}
+        onClick={() => dispatchGroups({ action: "REMOVE", item: group })}
         className="text-xs text-slate-400 hover:text-red-500"
       >
         이 사진 삭제

@@ -1,16 +1,18 @@
 // steps/InputItemDetail.tsx
 "use client";
 
+import { Dispatch } from "react";
 import {
   EditorStepPropsActions,
   EditorStepPropsValue,
+  GroupEditDisPatch,
   ListingItemDraft,
 } from "../../../types/types";
 
 const defaultStatus = "거의 새 것";
 
 interface PropsActions extends Omit<EditorStepPropsActions, "onNext"> {
-  onSave: (itemDraft: ListingItemDraft) => void;
+  onSave: (item: ListingItemDraft) => void;
 }
 
 type InputItemDetailProps = {
@@ -19,7 +21,7 @@ type InputItemDetailProps = {
 };
 
 export function InputItemDetail({ value, actions }: InputItemDetailProps) {
-  const { itemDraft } = value;
+  const { itemDraft, editAction } = value;
   const { onPrev, onChange, onSave } = actions;
 
   return (

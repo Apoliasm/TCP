@@ -1,17 +1,18 @@
 // sections/ItemListSection.tsx
-
 import {
+  GroupEditDisPatch,
   ImageGroupDraft,
+  ItemEditAction,
   ListingItemDraft,
   Rarity,
 } from "../../../types/types";
 
 type ItemListSectionValue = {
-  image: ImageGroupDraft;
+  items: ListingItemDraft[];
 };
 
 type ItemListSectionActions = {
-  onEditItem: (item: ListingItemDraft) => void;
+  onUpdateItem: () => void;
   onDeleteItem: (item: ListingItemDraft) => void;
 };
 
@@ -21,10 +22,10 @@ type ItemListSectionProps = {
 };
 
 export function ItemListSection({ value, actions }: ItemListSectionProps) {
-  const { image } = value;
-  const { onEditItem, onDeleteItem } = actions;
+  const { items } = value;
+  const { onUpdateItem, onDeleteItem } = actions;
 
-  if (image.items.length === 0) {
+  if (items.length === 0) {
     return (
       <section className="my-4">
         <p className="text-[11px] text-slate-400">
@@ -38,9 +39,9 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
   return (
     <section className="my-4">
       <ul className="space-y-2">
-        {image.items.map((item, index) => (
+        {items.map((item, index) => (
           <li
-            key={item.localItemId ?? `${image.localId}-${index}`}
+            key={`${item.cardName}-${index}`}
             className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
           >
             <div className="text-[11px] text-slate-700">
@@ -60,7 +61,7 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onEditItem(item)}
+                onClick={() => onUpdateItem()}
                 className="rounded-lg border border-slate-300 px-2 py-1 text-[11px] text-slate-700 hover:bg-slate-100 transition"
               >
                 수정
