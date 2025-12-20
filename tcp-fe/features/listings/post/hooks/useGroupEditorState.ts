@@ -6,54 +6,96 @@ import {
   EditorStep,
   Rarity,
   ItemEditAction,
+  ListingItemCommon,
+  ListingItemCard,
 } from "../types/types";
 import { ListingItemType } from "@/lib/api/listings/types";
 
+export const defaultCondition = "거의 새 것";
+
 type Action =
-  | { type: "SET_STEP"; step: EditorStep }
-  | { type: "NEXT_STEP" }
-  | { type: "PREV_STEP" }
-  | { type: "SET_ITEM"; item: Partial<ListingItemDraft> }
-  | { type: "SET_ACTION_ADD" }
-  | { type: "SET_ACTION_UPDATE" }
-  | { type: "SET_ACTION_DELETE" }; // 🔥 부분 업데이트
+  | {
+      action: "SET_TYPE";
+      itemType: ListingItemType;
+    }
+  | { action: "SET_STEP"; step: EditorStep }
+  | { action: "NEXT_STEP" }
+  | { action: "PREV_STEP" }
+  | { action: "SET_ITEM"; item: Partial<ListingItemDraft> }
+  | { action: "SET_ACTION_ADD" }
+  | { action: "SET_ACTION_UPDATE" }
+  | { action: "SET_ACTION_DELETE" }; // 🔥 부분 업데이트
+
+function createEmptyItemDraft(
+  itemType: ListingItemType,
+  base?: Partial<Pick<ListingItemCommon, "localId" | "listingImageId">>
+): ListingItemDraft {
+  const common = {
+    name: "",
+    condition: "",
+    detail: "",
+    pricePerUnit: 0,
+    quantity: 1,
+    localId: base?.localId ?? "",
+    listingImageId: base?.listingImageId ?? -1,
+    infoId: undefined,
+  };
+
+  switch (itemType) {
+    case ListingItemType.CARD:
+      return {
+        ...common,
+        type: ListingItemType.CARD,
+        cardCode: "",
+        rarity: Rarity.N,
+      };
+    case ListingItemType.ACCESSORY:
+      return { ...common, type: ListingItemType.ACCESSORY };
+    case ListingItemType.OTHER:
+      return { ...common, type: ListingItemType.OTHER };
+  }
+}
+
+function initGroupEditorState(imageLocalId: string): GroupEditorState {
+  return {
+    editAction: "ADD",
+    imageLocalId,
+    step: 1 as EditorStep,
+    itemDraft: createEmptyItemDraft(ListingItemType.CARD),
+  };
+}
 
 function initItemDraft(
   state: GroupEditorState,
-  editAction: ItemEditAction
+  editAction: ItemEditAction,
+  itemType: ListingItemType = state.itemDraft.type
 ): GroupEditorState {
   return {
-    ...state,
-    step: 1,
-    editAction: editAction,
-    itemDraft: {
-      ...state.itemDraft,
-      cardName: "",
-      condition: "",
-      detail: "",
-      pricePerUnit: 0,
-      quantity: 1,
-      type: ListingItemType.CARD,
-      rarity: Rarity.N,
-      infoId: undefined,
-    },
+    imageLocalId: state.imageLocalId,
+    step: 1 as EditorStep,
+    editAction,
+    itemDraft: createEmptyItemDraft(itemType),
   };
 }
+
 function reducer(state: GroupEditorState, action: Action): GroupEditorState {
-  switch (action.type) {
+  switch (action.action) {
+    case "SET_TYPE":
+      return initItemDraft(state, state.editAction, action.itemType);
     case "SET_STEP":
       return { ...state, step: action.step };
-
     case "NEXT_STEP":
       return { ...state, step: (state.step + 1) as EditorStep };
 
     case "PREV_STEP":
       return { ...state, step: (state.step - 1) as EditorStep };
-
     case "SET_ITEM":
       return {
         ...state,
-        itemDraft: { ...state.itemDraft, ...action.item },
+        itemDraft: {
+          ...state.itemDraft,
+          ...action.item,
+        } as typeof state.itemDraft,
       };
     case "SET_ACTION_ADD":
       return initItemDraft(state, "ADD");
@@ -67,17 +109,21 @@ function reducer(state: GroupEditorState, action: Action): GroupEditorState {
   }
 }
 
-export function useGroupEditorState(initial: GroupEditorState) {
-  const [state, dispatch] = useReducer(reducer, initial);
+export function useGroupEditorState(imageLocalId: string) {
+  const [state, dispatch] = useReducer(
+    reducer,
+    initGroupEditorState(imageLocalId)
+  );
 
-  const goNext = () => dispatch({ type: "NEXT_STEP" });
-  const goPrev = () => dispatch({ type: "PREV_STEP" });
-  const setStep = (step: EditorStep) => dispatch({ type: "SET_STEP", step });
+  const goNext = () => dispatch({ action: "NEXT_STEP" });
+  const goPrev = () => dispatch({ action: "PREV_STEP" });
+  const setStep = (step: EditorStep) => dispatch({ action: "SET_STEP", step });
   const setItem = (item: Partial<ListingItemDraft>) =>
-    dispatch({ type: "SET_ITEM", item: item });
-  const setAdd = () => dispatch({ type: "SET_ACTION_ADD" });
-  const setUpdate = () => dispatch({ type: "SET_ACTION_UPDATE" });
-
+    dispatch({ action: "SET_ITEM", item: item });
+  const setAdd = () => dispatch({ action: "SET_ACTION_ADD" });
+  const setUpdate = () => dispatch({ action: "SET_ACTION_UPDATE" });
+  const setType = (itemType: ListingItemType) =>
+    dispatch({ action: "SET_TYPE", itemType });
   return {
     state,
     goNext,
@@ -86,6 +132,7 @@ export function useGroupEditorState(initial: GroupEditorState) {
     setItem,
     setAdd,
     setUpdate,
+    setType,
   };
 }
 

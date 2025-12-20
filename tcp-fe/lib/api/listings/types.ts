@@ -116,15 +116,29 @@ export type ItemInfoResponseDto = {
   accessoryInfo: AccessoryInfoResponseDto | null;
 };
 
-export type CreateListingItemRequest = {
+export interface CreateCardInfoDto {
+  cardNameId?: number;
+  candidateId?: number;
+  candidateInfo?: { name: string };
+  cardCode: string;
+  nation: Nation;
+  rarity: Rarity;
+}
+export interface CreateAccessoryInfoDto {
+  name: string;
+}
+
+export interface CreateListingItemRequest {
   listingImageId?: number;
   type: ListingItemType;
-  // cardInfo / accessoryInfo는 나중에 붙일 예정이니 일단 생략
+  infoId?: number;
+  cardInfo?: CreateCardInfoDto;
+  accessoryInfo?: CreateAccessoryInfoDto;
   detail?: string;
   condition?: string;
   quantity: number;
   pricePerUnit: number;
-};
+}
 
 export type CreateListingRequest = {
   title: string;

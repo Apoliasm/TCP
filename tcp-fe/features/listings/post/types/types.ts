@@ -18,18 +18,34 @@ export interface ListingDraft {
   groups: ImageGroupDraft[];
 }
 
-export type ListingItemDraft = {
+export type ListingItemDraft =
+  | ListingItemCard
+  | ListingItemAccessory
+  | ListingItemOther;
+
+export interface ListingItemCommon {
   localId: string; // 프론트용 임시 ID
-  type: ListingItemType; // 'CARD' | 'ACCESSORY' | 'OTHER'
-  cardName: string; // CARD일 때 카드 이름 검색용
   listingImageId: number;
   infoId?: number;
   detail: string; // 품목에 대한 자세한 설명
   condition: string; // 상태 설명 (ex. NM, 사용감 있음 등)
   quantity: number; // 갯수
   pricePerUnit: number; // 한 개당 가격
-  rarity?: Rarity;
-};
+  name: string;
+}
+
+export interface ListingItemCard extends ListingItemCommon {
+  type: ListingItemType.CARD;
+  cardCode: string;
+  rarity: Rarity;
+}
+
+export interface ListingItemAccessory extends ListingItemCommon {
+  type: ListingItemType.ACCESSORY;
+}
+export interface ListingItemOther extends ListingItemCommon {
+  type: ListingItemType.OTHER;
+}
 
 export type ItemSearchInfo = {
   name: string;
@@ -72,8 +88,9 @@ export interface EditorStepPropsValue {
   editAction: ItemEditAction;
 }
 
-type GroupEditAction = EditAction;
-export type GroupEditDisPatch = {
-  action: GroupEditAction;
-  item: ImageGroupDraft;
-};
+type GroupEditAction = EditAction | "RESET";
+export type GroupEditDispatch =
+  | { action: "ADD"; item: ImageGroupDraft }
+  | { action: "UPDATE"; item: ImageGroupDraft }
+  | { action: "REMOVE"; item: ImageGroupDraft }
+  | { action: "RESET" };

@@ -5,7 +5,7 @@ import { Dispatch } from "react";
 import {
   EditorStepPropsActions,
   EditorStepPropsValue,
-  GroupEditDisPatch,
+  GroupEditDispatch,
   ListingItemDraft,
 } from "../../../types/types";
 

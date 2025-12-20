@@ -17,6 +17,7 @@ type InputItemNameValue = {
 type InputItemNameActions = {
   updateItemDraft: (partial: Partial<ListingItemDraft>) => void;
   goNext: () => void;
+  setType: (type: ListingItemType) => void;
 };
 
 type InputItemNameProps = {
@@ -26,18 +27,18 @@ type InputItemNameProps = {
 
 export function InputItemName({ value, actions }: InputItemNameProps) {
   const { item } = value;
-  const { updateItemDraft, goNext } = actions;
+  const { updateItemDraft, goNext, setType } = actions;
 
   const [isInput, setIsInput] = useState<boolean>(false);
   const [searchResult, setSearchResult] = useState<ItemInfoResponseDto[]>([]);
-  const [query, setQuery] = useState(item.cardName);
+  const [query, setQuery] = useState(item.name);
   const [cardCode, setCardCode] = useState("");
 
   const onClick = ({ name, code, rarity, id }: ItemSearchInfo) => {
     setIsInput(true);
     setQuery(name);
     if (code) setCardCode(code);
-    updateItemDraft({ rarity: rarity as Rarity, cardName: name, infoId: id });
+    updateItemDraft({ rarity: rarity as Rarity, name: name, infoId: id });
   };
 
   async function searchQuery(value: string) {
@@ -45,9 +46,14 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
     if (result && result.length > 0) setSearchResult([...result]);
     else if (result.length === 0) {
       setIsInput(true);
-      updateItemDraft({ cardName: value });
+      updateItemDraft({ name: value });
     }
   }
+
+  useEffect(() => {
+    setQuery(item.name);
+    if (item.type === ListingItemType.CARD) setCardCode(item.cardCode);
+  }, [value]);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -81,7 +87,7 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
             <button
               key={value}
               type="button"
-              onClick={() => updateItemDraft({ type: value })}
+              onClick={() => setType(value)}
               className={[
                 "px-3 py-1 rounded-full transition",
                 item.type === value
@@ -117,7 +123,8 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
         />
       </div>
 
-      {isInput ? (
+      {value.item.name.length !== 0 &&
+      value.item.type === ListingItemType.CARD ? (
         <div className="space-y-2">
           <p className="text-xs text-slate-500">코드네임</p>
 

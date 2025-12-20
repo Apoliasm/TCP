@@ -1,6 +1,7 @@
 // sections/ItemListSection.tsx
+import { ListingItemType } from "@/lib/api/listings/types";
 import {
-  GroupEditDisPatch,
+  GroupEditDispatch,
   ImageGroupDraft,
   ItemEditAction,
   ListingItemDraft,
@@ -41,17 +42,15 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
       <ul className="space-y-2">
         {items.map((item, index) => (
           <li
-            key={`${item.cardName}-${index}`}
+            key={`${item.name}-${index}`}
             className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
           >
             <div className="text-[11px] text-slate-700">
-              <span className="font-medium">
-                {item.cardName || "이름 없음"}
-              </span>
+              <span className="font-medium">{item.name || "이름 없음"}</span>
               <span className="ml-2 text-slate-500">
                 {item.quantity}장 · {item.pricePerUnit.toLocaleString()}원/장
               </span>
-              {item.rarity !== undefined && (
+              {item.type === ListingItemType.CARD && (
                 <span className="ml-2 text-[10px] text-emerald-600">
                   [{Rarity[item.rarity]}]
                 </span>
