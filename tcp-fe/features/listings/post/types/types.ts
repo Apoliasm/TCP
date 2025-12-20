@@ -54,17 +54,33 @@ export type ItemSearchInfo = {
   code?: string;
   rarity?: Rarity;
 };
-export enum Rarity {
-  N,
-  R,
-  SR,
-  UR,
-  UL,
-  Prismatic,
-  UPR,
-  NPR,
-  Other,
-}
+
+// as const를 붙임으로 RARITY의 key에 대한 강한 확신을 가짐
+// N가 string이 아닌 반드시 그 value 값이 되도록
+// value 값을 리터럴 값으로 만듦
+//값으로부터 정확한 타입을 얻기 위해 사용하는 as const
+export const RARITY = {
+  N: "N",
+  R: "R",
+  SR: "SR",
+  UR: "UR",
+  UL: "UL",
+  Prismatic: "Prismatic",
+  UPR: "UPR",
+  NPR: "NPR",
+  Other: "Other",
+} as const;
+/**
+ * typeof RARITY
+→ { N: 'N'; R: 'R'; ... }
+
+keyof typeof RARITY
+→ 'N' | 'R' | 'SR' | 'UR'
+
+typeof RARITY[keyof typeof RARITY]
+→ 'N' | 'R' | 'SR' | 'UR'
+ */
+export type Rarity = (typeof RARITY)[keyof typeof RARITY];
 
 export type EditorStep = 1 | 2 | 3 | 4 | 5;
 

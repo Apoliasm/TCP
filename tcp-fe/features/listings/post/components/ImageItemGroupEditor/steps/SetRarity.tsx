@@ -1,33 +1,32 @@
+import { ListingItemType } from "@/lib/api/listings/types";
 import {
   EditorStepPropsActions,
   EditorStepPropsValue,
   ListingItemDraft,
-  Rarity,
+  RARITY,
 } from "../../../types/types";
 
-export const RARITY_OPTIONS = [
-  { label: "노멀 (N)", value: Rarity.N },
-  { label: "레어 (R)", value: Rarity.R },
-  { label: "슈퍼 레어 (SR)", value: Rarity.SR },
-  { label: "울트라 레어 (UR)", value: Rarity.UR },
-  { label: "얼티메이트 레어 (UL)", value: Rarity.UL },
-  { label: "프리즈마틱", value: Rarity.Prismatic },
-  { label: "울트라 패러럴 (UPR)", value: Rarity.UPR },
-  { label: "노멀 패러럴 (NPR)", value: Rarity.NPR },
-  { label: "기타", value: Rarity.Other },
-] as const;
-
-interface PropsValue extends EditorStepPropsValue {
-  isCard: boolean;
-}
+export const RARITY_OPTIONS = (
+  [
+    ["노멀 (N)", RARITY.N],
+    ["레어 (R)", RARITY.R],
+    ["슈퍼 레어 (SR)", RARITY.SR],
+    ["울트라 레어 (UR)", RARITY.UR],
+    ["얼티메이트 레어 (UL)", RARITY.UL],
+    ["프리즈마틱", RARITY.Prismatic],
+    ["울트라 패러럴 (UPR)", RARITY.UPR],
+    ["노멀 패러럴 (NPR)", RARITY.NPR],
+    ["기타", RARITY.Other],
+  ] as const
+).map(([label, value]) => ({ label, value }));
 
 type SetRarityProps = {
-  value: PropsValue;
+  value: EditorStepPropsValue;
   actions: EditorStepPropsActions;
 };
 
 export function SetRarity({ value, actions }: SetRarityProps) {
-  const { itemDraft, isCard } = value;
+  const { itemDraft } = value;
   const { onChange, onPrev, onNext } = actions;
 
   return (
@@ -37,7 +36,7 @@ export function SetRarity({ value, actions }: SetRarityProps) {
         <span className="text-[11px] text-slate-500">2 / 5</span>
       </div>
 
-      {isCard ? (
+      {itemDraft.type === ListingItemType.CARD ? (
         <>
           <p className="text-xs text-slate-500">
             카드의 레어도를 선택해주세요.

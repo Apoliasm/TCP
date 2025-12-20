@@ -5,6 +5,7 @@ import {
   ImageGroupDraft,
   ItemEditAction,
   ListingItemDraft,
+  RARITY,
   Rarity,
 } from "../../../types/types";
 
@@ -13,7 +14,7 @@ type ItemListSectionValue = {
 };
 
 type ItemListSectionActions = {
-  onUpdateItem: () => void;
+  onUpdateItem: (item: ListingItemDraft) => void;
   onDeleteItem: (item: ListingItemDraft) => void;
 };
 
@@ -52,7 +53,7 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
               </span>
               {item.type === ListingItemType.CARD && (
                 <span className="ml-2 text-[10px] text-emerald-600">
-                  [{Rarity[item.rarity]}]
+                  [{item.rarity}]
                 </span>
               )}
             </div>
@@ -60,7 +61,7 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onUpdateItem()}
+                onClick={() => onUpdateItem(item)}
                 className="rounded-lg border border-slate-300 px-2 py-1 text-[11px] text-slate-700 hover:bg-slate-100 transition"
               >
                 수정
