@@ -5,22 +5,30 @@ import type {
   ListingDraft,
   ImageGroupDraft,
   ListingItemDraft,
-  GroupEditDisPatch,
+  GroupEditDispatch,
 } from "../types/types";
 
-const reducer = (state: ImageGroupDraft[], action: GroupEditDisPatch) => {
-  let inputItem = action.item;
+const reducer = (state: ImageGroupDraft[], action: GroupEditDispatch) => {
+  let inputGroup: ImageGroupDraft;
+  let localId: string = "";
   switch (action.action) {
     case "ADD":
-      return [...state, inputItem];
+      inputGroup = action.item;
+      return [...state, inputGroup];
     case "UPDATE":
+      inputGroup = action.item;
       return state.map((draft) => {
-        return draft.localId === inputItem.localId ? inputItem : draft;
+        return draft.localId === inputGroup.localId ? inputGroup : draft;
       });
     case "REMOVE":
+      inputGroup = action.item;
       return state.filter((draft) => {
-        return draft.localId !== inputItem.localId;
+        return draft.localId !== inputGroup.localId;
       });
+    case "RESET":
+      return [];
+    default:
+      return state;
   }
 };
 export function useListingGroups() {

@@ -6,9 +6,13 @@ import {
   CreateListingItemRequest,
   ListingStatus,
   ListingImageResponseDto,
+  CreateCardInfoDto,
+  ListingItemType,
+  Nation,
 } from "./types";
 import {
   ListingDraft,
+  ListingItemCard,
   ListingItemDraft,
 } from "@/features/listings/post/types/types";
 import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
@@ -16,23 +20,51 @@ import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-pro
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 
+function isCardInfo(item: ListingItemDraft): item is ListingItemCard {
+  return item.type === ListingItemType.CARD;
+}
 function mapDraftToCreateListingRequest(
   draft: ListingDraft,
   sellerId: number
 ): CreateListingRequest {
-  const items: CreateListingItemRequest[] = draft.images.flatMap((image) =>
-    image.items.map((item) => ({
-      listingImageId: image.listingImageId, // 아직 없으면 undefined로 감
-      type: item.type,
-      infoId: item.infoId,
-      detail: item.detail,
-      condition: item.condition,
-      quantity: item.quantity,
-      pricePerUnit: item.pricePerUnit,
-    }))
+  const items: CreateListingItemRequest[] = draft.groups.flatMap((group) =>
+    group.items.map((itemDraft) => {
+      const {
+        infoId,
+        condition,
+        detail,
+        listingImageId,
+        pricePerUnit,
+        quantity,
+        type,
+        localId,
+        name,
+      } = itemDraft;
+      let itemDto: CreateListingItemRequest = {
+        listingImageId: group.listingImageId,
+        type,
+        detail,
+        condition,
+        quantity,
+        pricePerUnit,
+      };
+      if (infoId) itemDto.infoId = infoId;
+      else if (isCardInfo(itemDraft)) {
+        const { rarity, cardCode } = itemDraft;
+        itemDto.cardInfo = {
+          candidateInfo: { name: name },
+          nation: Nation.KR,
+          rarity,
+          cardCode,
+        };
+      } else {
+        itemDto.accessoryInfo = { name: name };
+      }
+      return itemDto;
+    })
   );
-  console.log(draft.images);
-  const images: ListingImageResponseDto[] = draft.images
+  console.log(draft.groups);
+  const images: ListingImageResponseDto[] = draft.groups
     .filter((img) => img.listingImageId != null)
     .map((img) => ({
       id: img.listingImageId, // 실제 Dto에 맞게 필드명 조정

@@ -1,9 +1,12 @@
 import { createListingFromDraft } from "@/lib/api/listings/mutations";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ListingDraft } from "../types/types";
 import { ListingStatus } from "@/lib/api/listings/types";
 
 export function useListingSubmit() {
+  const router = useRouter();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -23,16 +26,18 @@ export function useListingSubmit() {
 
       await createListingFromDraft(listingDraft, {
         sellerId,
-        status: ListingStatus.ON_SALE, // 필요하면 여기서 지정
+        status: ListingStatus.ON_SALE,
       });
 
-      // 성공 후 초기화 + 페이지 이동 등
       reset();
-      alert("게시글이 등록되었습니다.");
-      // router.push("/listings"); 등 원하는 곳으로 이동
+      alert("게시물 등록에 성공했습니다.");
+      // ✅ 성공 후 /listings로 이동
+      router.push("/listing");
+      // 목록 화면이 서버 컴포넌트 + fetch 캐시 쓰면 아래가 도움될 때가 있음
+      router.refresh();
     } catch (err: any) {
       console.error(err);
-      setErrorMessage(err.message ?? "등록 중 오류가 발생했습니다.");
+      setErrorMessage(err?.message ?? "등록 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
