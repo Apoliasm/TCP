@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, useRef, useState } from "react";
-import { GroupEditDisPatch, ImageGroupDraft } from "../types/types";
+import { GroupEditDispatch, ImageGroupDraft } from "../types/types";
 import { ImageItemGroupEditor } from "./ImageItemGroupEditor/ImageItemGroupEditor";
 import { postListingImage } from "@/lib/api/listings/mutations";
 
@@ -10,7 +10,7 @@ type ListingEditorValue = {
 };
 
 type ListingEditorActions = {
-  dispatchGroups: Dispatch<GroupEditDisPatch>;
+  dispatchGroups: Dispatch<GroupEditDispatch>;
 };
 
 type ListingEditorProps = {
