@@ -10,9 +10,11 @@ export type ListingSummary = {
   id: number;
   title: string;
   sellerId: number;
+  sellerNickName: string;
   status: ListingStatus;
   createdAt: string;
   updatedAt: string;
+  thumbnailURL: string;
 };
 
 export type FetchListingsParams = {
