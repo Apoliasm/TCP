@@ -40,10 +40,10 @@ function ListingCard({ listing }: ListingCardProps) {
     >
       {/* 썸네일 */}
       <div className="w-20 h-20 bg-gray-100 flex items-center justify-center text-xs text-gray-400">
-        {listing.mainThumbnailUrl ? (
+        {listing.thumbnailURL ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={listing.mainThumbnailUrl}
+            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${listing.thumbnailURL}`}
             alt={listing.title}
             className="w-full h-full object-cover rounded"
           />
@@ -57,9 +57,6 @@ function ListingCard({ listing }: ListingCardProps) {
         <div className="flex items-center gap-2 mb-1">
           <StatusBadge status={listing.status} />
           <h2 className="font-semibold truncate">{listing.title}</h2>
-        </div>
-        <div className="text-sm text-gray-500">
-          아이템 {listing.totalItemCount}개 · 등록 {createdText}
         </div>
       </div>
     </a>

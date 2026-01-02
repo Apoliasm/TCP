@@ -33,17 +33,16 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const localId = crypto.randomUUID();
+    const localImageId = crypto.randomUUID();
     const previewUrl = URL.createObjectURL(file);
     const { id, url } = await postListingImage(imageOrder, file);
     setImageOrder((prev) => prev + 1);
     const newGroup: ImageGroupDraft = {
-      localId,
+      localImageId,
       file,
-      previewUrl,
-      imageUrl: url,
+      imageId: id,
       order: imageOrder,
-      listingImageId: id,
+      previewUrl,
       items: [],
       // 필요하면 listingImageId 같은 필드도 여기서 undefined 로 초기화
     };
@@ -110,7 +109,7 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
         <div className="space-y-4">
           {groups.map((group, index) => (
             <ImageItemGroupEditor
-              key={group.localId}
+              key={group.localImageId}
               value={{ group, stepIndex: index + 1 }}
               actions={{
                 dispatchGroups,

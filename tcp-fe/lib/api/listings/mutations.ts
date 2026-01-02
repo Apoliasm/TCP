@@ -1,73 +1,32 @@
 // lib/api/listings/api.ts
 
-import { json } from "stream/consumers";
 import {
   CreateListingRequest,
   CreateListingItemRequest,
   ListingStatus,
   ListingImageResponseDto,
-  CreateCardInfoDto,
-  ListingItemType,
-  Nation,
 } from "./types";
-import {
-  ListingDraft,
-  ListingItemCard,
-  ListingItemDraft,
-} from "@/features/listings/post/types/types";
+import { ListingDraft } from "@/features/listings/post/types/types";
 import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 
-function isCardInfo(item: ListingItemDraft): item is ListingItemCard {
-  return item.type === ListingItemType.CARD;
-}
 function mapDraftToCreateListingRequest(
   draft: ListingDraft,
   sellerId: number
 ): CreateListingRequest {
   const items: CreateListingItemRequest[] = draft.groups.flatMap((group) =>
     group.items.map((itemDraft) => {
-      const {
-        infoId,
-        condition,
-        detail,
-        listingImageId,
-        pricePerUnit,
-        quantity,
-        type,
-        localId,
-        name,
-      } = itemDraft;
-      let itemDto: CreateListingItemRequest = {
-        listingImageId: group.listingImageId,
-        type,
-        detail,
-        condition,
-        quantity,
-        pricePerUnit,
-      };
-      if (infoId) itemDto.infoId = infoId;
-      else if (isCardInfo(itemDraft)) {
-        const { rarity, cardCode } = itemDraft;
-        itemDto.cardInfo = {
-          candidateInfo: { name: name },
-          nation: Nation.KR,
-          rarity,
-          cardCode,
-        };
-      } else {
-        itemDto.accessoryInfo = { name: name };
-      }
-      return itemDto;
+      const { localImageId, ...rest } = itemDraft;
+      return { ...rest };
     })
   );
   console.log(draft.groups);
   const images: ListingImageResponseDto[] = draft.groups
-    .filter((img) => img.listingImageId != null)
+    .filter((img) => img.imageId != null)
     .map((img) => ({
-      id: img.listingImageId, // 실제 Dto에 맞게 필드명 조정
+      id: img.imageId, // 실제 Dto에 맞게 필드명 조정
       order: img.order,
     }));
 
@@ -80,8 +39,9 @@ function mapDraftToCreateListingRequest(
   });
   return {
     title: draft.title,
-    sellerId,
+    userId: 1,
     status: ListingStatus.ON_SALE,
+    memo: "",
     items,
     images: images,
   };
@@ -135,6 +95,6 @@ export async function postListingImage(order: number, file: File) {
   }
 
   // 백엔드 응답 스펙에 맞게 타입은 한 번 정의해두면 좋음
-  const data: { id: number; url?: string } = await res.json();
+  const data: { id: number; url?: string; order?: number } = await res.json();
   return data;
 }
