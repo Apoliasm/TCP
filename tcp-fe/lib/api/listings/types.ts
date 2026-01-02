@@ -1,4 +1,8 @@
-import { Rarity } from "@/features/listings/post/types/types";
+import {
+  ListingDraft,
+  ListingItemDraft,
+  Rarity,
+} from "@/features/listings/post/types/types";
 
 export enum ListingStatus {
   ON_SALE = "ON_SALE",
@@ -130,22 +134,13 @@ export interface CreateAccessoryInfoDto {
   name: string;
 }
 
-export interface CreateListingItemRequest {
-  listingImageId?: number;
-  type: ListingItemType;
-  infoId?: number;
-  cardInfo?: CreateCardInfoDto;
-  accessoryInfo?: CreateAccessoryInfoDto;
-  detail?: string;
-  condition?: string;
-  quantity: number;
-  pricePerUnit: number;
-}
+export type CreateListingItemRequest = Omit<ListingItemDraft, "localImageId">;
 
 export type CreateListingRequest = {
+  userId: number;
   title: string;
-  sellerId: number;
-  status?: ListingStatus;
+  memo: string;
+  status: ListingStatus;
   items: CreateListingItemRequest[];
   images: ListingImageResponseDto[];
   // images 필드는 선택사항이라 지금은 생략하거나 추후 이미지 업로드 붙일 때 추가

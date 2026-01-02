@@ -18,12 +18,14 @@ const reducer = (state: ImageGroupDraft[], action: GroupEditDispatch) => {
     case "UPDATE":
       inputGroup = action.item;
       return state.map((draft) => {
-        return draft.localId === inputGroup.localId ? inputGroup : draft;
+        return draft.localImageId === inputGroup.localImageId
+          ? inputGroup
+          : draft;
       });
     case "REMOVE":
       inputGroup = action.item;
       return state.filter((draft) => {
-        return draft.localId !== inputGroup.localId;
+        return draft.localImageId !== inputGroup.localImageId;
       });
     case "RESET":
       return [];

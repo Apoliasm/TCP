@@ -7,15 +7,12 @@ import {
   ImageGroupDraft,
   GroupEditDispatch,
 } from "../../types/types";
-import { ListingItemType } from "@/lib/api/listings/types";
 import { HeaderSection } from "./sections/HeaderSection";
 import { ItemListSection } from "./sections/ItemListSection";
 import { ImagePreviewSection } from "./sections/ImagePreviewSection";
 import { InputItemName } from "./steps/InputItemName";
-import { SetRarity } from "./steps/SetRarity";
 import { SetPrice } from "./steps/SetPrice";
 import { InputItemDetail } from "./steps/InputItemDetail";
-import { SetQuantity } from "./steps/SetQuantity";
 import { useGroupEditorState } from "../../hooks/useGroupEditorState";
 type ImageItemEditorValue = {
   group: ImageGroupDraft;
@@ -33,16 +30,11 @@ type Props = {
 export function ImageItemGroupEditor({ value, actions }: Props) {
   const { group, stepIndex } = value;
   const { dispatchGroups } = actions;
-  const {
-    goNext,
-    goPrev,
-    setAdd,
-    setItem,
-    setStep,
-    setUpdate,
-    setType,
-    state,
-  } = useGroupEditorState(group.localId);
+  const { setAdd, setItem, setUpdate, state } = useGroupEditorState(
+    group.localImageId,
+    group.imageId
+  );
+  const { imageLocalId, itemDraft, editAction } = state;
 
   const onStartUpdateItem = (item: ListingItemDraft) => {
     setUpdate(item);
@@ -50,7 +42,7 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
 
   const onDeleteItem = (del: ListingItemDraft) => {
     group.items = group.items.filter((item) => {
-      del.name === item.name && del.type === item.type;
+      del.name === item.name;
     });
     setAdd();
     dispatchGroups({ action: "UPDATE", item: group });
@@ -61,91 +53,13 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
       editAction === "ADD"
         ? [...group.items, cur]
         : group.items.map((item) =>
-            item.localId === cur.localId ? cur : item
+            item.localImageId === cur.localImageId ? cur : item
           );
 
     const nextGroup: ImageGroupDraft = { ...group, items: nextItems };
 
     dispatchGroups({ action: "UPDATE", item: nextGroup });
     setAdd();
-  };
-
-  const { imageLocalId, itemDraft, step, editAction } = state;
-
-  /** 🧩 스텝 단계별 렌더링 */
-  const renderStep = () => {
-    switch (step) {
-      // 1단계: 타입 + 카드명
-      case 1:
-        return (
-          <InputItemName
-            value={{ item: itemDraft }}
-            actions={{
-              updateItemDraft: setItem,
-              goNext,
-              setType,
-            }}
-          />
-        );
-
-      // 2단계: 레어도 선택
-      case 2:
-        return (
-          <SetRarity
-            value={{
-              itemDraft,
-              editAction,
-            }}
-            actions={{
-              onChange: setItem,
-              onPrev: goPrev,
-              onNext: goNext,
-            }}
-          />
-        );
-
-      // 3단계: 수량
-      case 3:
-        return (
-          <SetQuantity
-            value={{ itemDraft, editAction }}
-            actions={{
-              onChange: setItem,
-              onPrev: goPrev,
-              onNext: goNext,
-            }}
-          />
-        );
-
-      // 4단계: 가격
-      case 4:
-        return (
-          <SetPrice
-            value={{ itemDraft, editAction }}
-            actions={{
-              onChange: setItem,
-              onPrev: goPrev,
-              onNext: goNext,
-            }}
-          />
-        );
-
-      // 5단계: 상태 & 상세 설명
-      case 5:
-        return (
-          <InputItemDetail
-            value={{ itemDraft, editAction }}
-            actions={{
-              onPrev: goPrev,
-              onChange: setItem,
-              onSave: updateGroup,
-            }}
-          />
-        );
-
-      default:
-        return null;
-    }
   };
 
   return (
@@ -166,7 +80,40 @@ export function ImageItemGroupEditor({ value, actions }: Props) {
       />
 
       {/* 아이템 추가/수정 위자드 */}
-      <section className="mt-4 space-y-4">{renderStep()}</section>
+      <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm ">
+        <InputItemName
+          value={{ item: itemDraft }}
+          actions={{
+            updateItemDraft: setItem,
+          }}
+        />
+        <div className="flex justify-between py-2">
+          <span className="px-2">
+            <SetPrice
+              value={{ itemDraft, editAction }}
+              actions={{
+                onChange: setItem,
+              }}
+            />
+          </span>
+        </div>
+
+        <InputItemDetail
+          value={{ itemDraft, editAction }}
+          actions={{
+            onChange: setItem,
+          }}
+        />
+        <div className="flex justify-between gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => updateGroup(itemDraft)}
+            className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-medium text-white hover:bg-slate-800"
+          >
+            이 매물 저장하고 다음 매물 추가
+          </button>
+        </div>
+      </section>
     </article>
   );
 }

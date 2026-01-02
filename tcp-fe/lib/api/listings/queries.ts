@@ -1,12 +1,10 @@
+import { ListingDetailResponse } from "@/features/listings/detail/types/types";
 import { BASE_URL } from "../url";
 import {
   FetchListingsParams,
-  ListingStatus,
   ListingSummary,
   SearchCardDto,
-  CardInfoResponseDto,
   ItemInfoResponseDto,
-  ListingResponseDto,
 } from "./types";
 export async function fetchListings(
   params: FetchListingsParams = {}
@@ -30,7 +28,7 @@ export async function fetchListings(
 
 export async function fetchListingById(
   id: number
-): Promise<ListingResponseDto> {
+): Promise<ListingDetailResponse> {
   const res = await fetch(`${BASE_URL}/listings/${id}`, {
     cache: "no-store", // 캐싱은 React Query가 관리
   });
