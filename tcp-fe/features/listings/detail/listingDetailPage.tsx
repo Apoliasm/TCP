@@ -2,13 +2,13 @@
 
 import { useMemo } from "react";
 import { useListing } from "./hooks/useListing";
-import {
-  ListingDetailResponse,
-  ListingImageItemResponse,
-  ListingImageResponse,
-} from "./types/types";
 import { useRouter } from "next/navigation";
-import { ListingStatus } from "@/lib/api/listings/types";
+import {
+  ImageGroupResponse,
+  ListingItemResponse,
+  ListingResponse,
+  ListingStatus,
+} from "@/lib/api/listings/types";
 import { RARITY } from "../post/types/types";
 
 type Props = {
@@ -34,7 +34,7 @@ export default function ListingDetailPage({ id }: Props) {
       <main className="p-8 space-y-4">
         <button
           onClick={() => {
-            // TODO: 목록 이동
+            handleBack();
           }}
           className="text-sm text-gray-500 hover:underline"
         >
@@ -45,7 +45,7 @@ export default function ListingDetailPage({ id }: Props) {
     );
   }
 
-  const listing = data as unknown as ListingDetailResponse;
+  const listing = data as unknown as ListingResponse;
 
   const createdText = listing?.createdAt
     ? new Date(listing.createdAt).toLocaleString("ko-KR", {
@@ -75,7 +75,7 @@ export default function ListingDetailPage({ id }: Props) {
         </div>
 
         <div className="text-sm text-gray-500">
-          판매자 ID: {listing.sellerId} · 작성일: {createdText}
+          판매자 ID: {listing.userId} · 작성일: {createdText}
         </div>
       </header>
 
@@ -86,8 +86,8 @@ export default function ListingDetailPage({ id }: Props) {
   );
 }
 
-function ImageSection({ image }: { image: ListingImageResponse }) {
-  const imageSrc = buildImageSrc(image.imageUrl);
+function ImageSection({ image }: { image: ImageGroupResponse }) {
+  const imageSrc = buildImageSrc(image.url);
 
   return (
     <section className="border rounded p-4 mb-6">
@@ -150,54 +150,33 @@ function StatusBadge({ status }: { status: ListingStatus }) {
   );
 }
 
-function ListingItemRow({ item }: { item: ListingImageItemResponse }) {
-  const itemInfo = item.itemInfo;
-  const cardInfo = itemInfo?.cardInfo;
-
-  // 카드명은 cardName이 있으면 우선, 없으면 candidate.name, 둘 다 없으면 fallback
-  const cardDisplayName =
-    cardInfo?.cardName?.name ?? cardInfo?.candidate?.name ?? "(이름 미확정)";
-
+function ListingItemRow({ item }: { item: ListingItemResponse }) {
   return (
     <li className="border rounded p-3 bg-white shadow-sm space-y-2">
       {/* 상단 라인: 아이템 타입/이름 */}
       <div className="flex justify-between items-start gap-3">
         <div className="min-w-0">
-          {itemInfo?.type === "CARD" && cardInfo ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold text-gray-800 truncate">
-                {cardDisplayName}
-              </span>
-              {cardInfo.rarity ?? (
-                <span className="text-[10px] text-emerald-600">
-                  {`레어도 ${RARITY[cardInfo.rarity]}`}
-                </span>
-              )}
-            </div>
-          ) : (
-            <div className="font-semibold text-gray-800">
-              {itemInfo?.type ?? "ITEM"} (infoId: {item.infoId ?? "-"})
-            </div>
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-semibold text-gray-800 truncate">
+              {item.name}
+            </span>
+            <span className="text-gray-600 text-sm">
+              {Number(item.pricePerUnit).toLocaleString()}원
+            </span>
+          </div>
         </div>
-
-        <div className="text-sm text-gray-500 shrink-0">
-          수량: {item.quantity}개
-        </div>
+        <div>기능 추가 예정</div>
       </div>
 
       {/* 상태/가격 */}
-      <div className="flex align-middle gap-3 ">
-        <span className="text-gray-600 text-sm">
-          가격: {Number(item.pricePerUnit).toLocaleString()}원
-        </span>
-        <span className="text-gray-600 text-sm">
-          상태: {item.condition || "-"}
-        </span>
-      </div>
+      {item.detailText.length > 0 && (
+        <div className="flex gap-1">
+          <span className=" shrink-0 text-gray-600 text-sm ">제품 설명 :</span>
 
-      {!!item.detail && (
-        <div className="text-gray-500 text-sm">{item.detail}</div>
+          <span className="min-w-0 text-black text-base wrap-break-word">
+            {item.detailText}
+          </span>
+        </div>
       )}
     </li>
   );

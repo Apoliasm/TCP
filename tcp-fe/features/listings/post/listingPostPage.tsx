@@ -4,10 +4,13 @@ import { ListingTitle } from "./components/listingTitle";
 import { ListingEditor } from "./components/listingEditor";
 import { useListingDraft } from "./hooks/useListingDraft";
 import { useListingSubmit } from "./hooks/useListingSubmit";
+import { ListingStatus } from "@/lib/api/listings/types";
 
 export function ListingPostPage() {
   const { title, groups, dispatchGroups, isValid, setTitle } = useListingDraft({
     title: "",
+    memo: "",
+    status: ListingStatus.ON_SALE,
     groups: [],
   });
 
@@ -44,7 +47,9 @@ export function ListingPostPage() {
             "bg-slate-900 text-white hover:bg-slate-800",
             "disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed",
           ].join(" ")}
-          onClick={() => handleSubmit({ title, groups }, isValid, reset)}
+          onClick={() =>
+            handleSubmit({ title, groups, memo, status }, isValid, reset)
+          }
         >
           {isSubmitting ? "등록 중..." : "게시글 등록"}
         </button>
