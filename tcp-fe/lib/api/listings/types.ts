@@ -31,16 +31,6 @@ export type FetchListingsParams = {
   size?: number;
 };
 
-export type ListingDetailResponse = {
-  id: number;
-  userId: number;
-  title: string;
-  memo: string | null;
-  status: ListingStatus;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export interface ListingResponse extends Listing {
   id: 3;
   userId: 1;
@@ -66,3 +56,12 @@ export enum ListingItemType {
   ACCESSORY = "ACCESSORY",
   OTHER = "OTHER",
 }
+
+export interface ItemSearchResponse {
+  id: number;
+  name: string;
+}
+
+export type SearchQuery = {
+  query: string;
+};

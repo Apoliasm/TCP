@@ -1,4 +1,4 @@
-import { ItemInfoResponseDto, ListingItemType } from "@/lib/api/listings/types";
+import { ItemSearchResponse, ListingItemType } from "@/lib/api/listings/types";
 import { ItemSearchInfo, ListingItemDraft, Rarity } from "../../../types/types";
 import { useEffect, useState } from "react";
 import { searchItemByname } from "@/lib/api/listings/queries";
@@ -26,7 +26,7 @@ type InputItemNameProps = {
 export function InputItemName({ value, actions }: InputItemNameProps) {
   const { item } = value;
   const { updateItemDraft } = actions;
-  const [searchResult, setSearchResult] = useState<ItemInfoResponseDto[]>([]);
+  const [searchResult, setSearchResult] = useState<ItemSearchInfo[]>([]);
 
   const [isSearching, setIsSearching] = useState(false);
   const resetSearch = () => {
@@ -39,7 +39,7 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
   };
 
   async function searchQuery(value: string) {
-    const result = await searchItemByname({ nameQuery: value, codeQuery: "" });
+    const result = await searchItemByname({ query: value });
     if (result && result.length > 0) setSearchResult([...result]);
     else if (result.length === 0) {
       updateItemDraft({ name: value });
@@ -99,7 +99,7 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
 }
 
 type SearchResultViewerProps = {
-  results: ItemInfoResponseDto[];
+  results: ItemSearchResponse[];
   onChange: ({ name, id }: ItemSearchInfo) => void;
 };
 
@@ -108,34 +108,21 @@ function SearchResultViewer({ results, onChange }: SearchResultViewerProps) {
 
   return (
     <ul className="max-h-32 overflow-y-scroll border border-slate-200 bg-white text-xs shadow-sm">
-      {results
-        .map((result) => {
-          const name =
-            result.cardInfo?.cardName?.name ??
-            result.cardInfo?.candidate?.name ??
-            result.accessoryInfo?.name ??
-            "";
-
-          return {
-            id: result.id,
-            name,
-          };
-        })
-        .map((item) => (
-          <li
-            key={item.id}
-            className="cursor-pointer px-3 py-2 hover:bg-slate-50 flex justify-between items-center"
-            onClick={() =>
-              onChange({
-                name: item.name,
-                id: item.id,
-              })
-            }
-          >
-            {/* 카드명 */}
-            <span className="text-sm text-slate-800">{item.name}</span>
-          </li>
-        ))}
+      {results.map((item) => (
+        <li
+          key={item.id}
+          className="cursor-pointer px-3 py-2 hover:bg-slate-50 flex justify-between items-center"
+          onClick={() =>
+            onChange({
+              name: item.name,
+              id: item.id,
+            })
+          }
+        >
+          {/* 카드명 */}
+          <span className="text-sm text-slate-800">{item.name}</span>
+        </li>
+      ))}
     </ul>
   );
 }

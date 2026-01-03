@@ -6,22 +6,33 @@ export interface ImageGroupDraft extends ImageGroup {
   localImageId: string;
 }
 
+export interface Image {
+  order: number;
+  id: number;
+}
+
 export interface ImageGroup {
   file: File | null;
   imageId: number;
   previewUrl: string;
-  order: number;
   items: ListingItemDraft[];
+  order: number;
 }
 
 export interface Listing {
   title: string;
   memo: string | null;
   status: ListingStatus;
+  userId: number;
 }
 export interface ListingDraft extends Listing {
   // 필요하면 status 등도 여기로 확장 가능
   groups: ImageGroupDraft[];
+}
+
+export interface ListingRequest extends Listing {
+  items: ListingItem[];
+  images: Image[];
 }
 
 export interface ListingItem {

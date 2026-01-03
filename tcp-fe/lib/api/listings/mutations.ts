@@ -1,12 +1,14 @@
 // lib/api/listings/api.ts
 
+import { ListingStatus } from "./types";
 import {
-  CreateListingRequest,
-  CreateListingItemRequest,
-  ListingStatus,
-  ListingImageResponseDto,
-} from "./types";
-import { ListingDraft } from "@/features/listings/post/types/types";
+  Image,
+  ImageGroupDraft,
+  ListingDraft,
+  ListingItem,
+  ListingItemDraft,
+  ListingRequest,
+} from "@/features/listings/post/types/types";
 import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
 
 const BASE_URL =
@@ -15,15 +17,15 @@ const BASE_URL =
 function mapDraftToCreateListingRequest(
   draft: ListingDraft,
   sellerId: number
-): CreateListingRequest {
-  const items: CreateListingItemRequest[] = draft.groups.flatMap((group) =>
+): ListingRequest {
+  const items: ListingItem[] = draft.groups.flatMap((group) =>
     group.items.map((itemDraft) => {
       const { localImageId, ...rest } = itemDraft;
       return { ...rest };
     })
   );
   console.log(draft.groups);
-  const images: ListingImageResponseDto[] = draft.groups
+  const images: Image[] = draft.groups
     .filter((img) => img.imageId != null)
     .map((img) => ({
       id: img.imageId, // 실제 Dto에 맞게 필드명 조정
@@ -35,7 +37,7 @@ function mapDraftToCreateListingRequest(
     sellerId,
     status: ListingStatus.ON_SALE,
     items,
-    images: images,
+    images,
   });
   return {
     title: draft.title,
@@ -43,7 +45,7 @@ function mapDraftToCreateListingRequest(
     status: ListingStatus.ON_SALE,
     memo: "",
     items,
-    images: images,
+    images,
   };
 }
 

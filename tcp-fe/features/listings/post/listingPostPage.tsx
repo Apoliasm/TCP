@@ -7,7 +7,17 @@ import { useListingSubmit } from "./hooks/useListingSubmit";
 import { ListingStatus } from "@/lib/api/listings/types";
 
 export function ListingPostPage() {
-  const { title, groups, dispatchGroups, isValid, setTitle } = useListingDraft({
+  const {
+    title,
+    userId,
+    groups,
+    memo,
+    status,
+    dispatchGroups,
+    isValid,
+    setTitle,
+  } = useListingDraft({
+    userId: 1,
     title: "",
     memo: "",
     status: ListingStatus.ON_SALE,
@@ -48,7 +58,11 @@ export function ListingPostPage() {
             "disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed",
           ].join(" ")}
           onClick={() =>
-            handleSubmit({ title, groups, memo, status }, isValid, reset)
+            handleSubmit(
+              { userId, title, groups, memo, status },
+              isValid,
+              reset
+            )
           }
         >
           {isSubmitting ? "등록 중..." : "게시글 등록"}

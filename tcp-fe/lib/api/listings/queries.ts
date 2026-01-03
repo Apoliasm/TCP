@@ -1,10 +1,10 @@
-import { ListingDetailResponse } from "@/features/listings/detail/types/types";
+import { ItemSearchInfo } from "@/features/listings/post/types/types";
 import { BASE_URL } from "../url";
 import {
   FetchListingsParams,
+  ListingResponse,
   ListingSummary,
-  SearchCardDto,
-  ItemInfoResponseDto,
+  SearchQuery,
 } from "./types";
 export async function fetchListings(
   params: FetchListingsParams = {}
@@ -26,9 +26,7 @@ export async function fetchListings(
   return res.json();
 } // lib/api/listings.ts
 
-export async function fetchListingById(
-  id: number
-): Promise<ListingDetailResponse> {
+export async function fetchListingById(id: number): Promise<ListingResponse> {
   const res = await fetch(`${BASE_URL}/listings/${id}`, {
     cache: "no-store", // 캐싱은 React Query가 관리
   });
@@ -40,13 +38,10 @@ export async function fetchListingById(
   return res.json();
 }
 
-export async function searchItemByname({
-  nameQuery,
-  codeQuery,
-}: SearchCardDto) {
+export async function searchItemByname({ query }: SearchQuery) {
   const queryString = new URLSearchParams();
-  queryString.set("nameQuery", nameQuery);
-  const res: ItemInfoResponseDto[] = await fetch(
+  queryString.set("nameQuery", query);
+  const res: ItemSearchInfo[] = await fetch(
     `${BASE_URL}/items/info?${queryString}`
   ).then((res) => res.json());
 
