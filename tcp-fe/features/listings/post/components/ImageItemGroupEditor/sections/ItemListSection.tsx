@@ -51,11 +51,6 @@ export function ItemListSection({ value, actions }: ItemListSectionProps) {
               <span className="ml-2 text-slate-500">
                 {item.quantity}장 · {item.pricePerUnit.toLocaleString()}원/장
               </span>
-              {item.type === ListingItemType.CARD && (
-                <span className="ml-2 text-[10px] text-emerald-600">
-                  [{item.rarity}]
-                </span>
-              )}
             </div>
 
             <div className="flex items-center gap-2">
