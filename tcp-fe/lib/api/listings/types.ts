@@ -1,5 +1,9 @@
 import {
+  ImageGroup,
+  ImageGroupDraft,
+  Listing,
   ListingDraft,
+  ListingItem,
   ListingItemDraft,
   Rarity,
 } from "@/features/listings/post/types/types";
@@ -13,8 +17,8 @@ export enum ListingStatus {
 export type ListingSummary = {
   id: number;
   title: string;
-  sellerId: number;
-  sellerNickName: string;
+  userId: number;
+  userNickName: string;
   status: ListingStatus;
   createdAt: string;
   updatedAt: string;
@@ -27,126 +31,38 @@ export type FetchListingsParams = {
   size?: number;
 };
 
-/**
- * 상세 조회에서 내려오는 "아이템 한 개" 타입
- * (백엔드 응답 예시 기준)
- */
-export type ListingImageItemResponseDto = {
+export type ListingDetailResponse = {
+  id: number;
+  userId: number;
+  title: string;
+  memo: string | null;
+  status: ListingStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export interface ListingResponse extends Listing {
+  id: 3;
+  userId: 1;
+  createdAt: string;
+  updatedAt: string;
+  images: ImageGroupResponse[];
+}
+
+export interface ListingItemResponse extends ListingItem {
   id: number;
   listingId: number;
-  listingImageId: number;
-  infoId: number;
-  detail: string;
-  condition: string;
-  quantity: number;
-  pricePerUnit: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
-/**
- * 상세 조회에서 내려오는 "이미지 한 장 + 그 밑의 items" 타입
- */
-export type ListingImageResponseDto = {
-  id?: number;
-  order: number;
-};
-
-/**
- * /listings/:id 상세 조회 응답
- */
-export type ListingResponseDto = {
+}
+export interface ImageGroupResponse {
   id: number;
-  title: string;
-  sellerId: number;
-  status: ListingStatus;
-  createdAt: string;
-  updatedAt: string;
-  images: ListingImageResponseDto[];
-};
-
-/**
- * --- 프론트 작성 폼용 Draft 타입 (기존 그대로 사용) ---
- */
-
+  listingId: number;
+  url: string;
+  order: number;
+  items: ListingItemResponse[];
+}
 // 사진 하나 + 그 밑에 묶인 아이템들
 export enum ListingItemType {
   CARD = "CARD",
   ACCESSORY = "ACCESSORY",
   OTHER = "OTHER",
-}
-
-export enum Nation {
-  KR = "KR",
-  JP = "JP",
-  EN = "EN",
-  OTHER = "Other",
-}
-export interface CardInfoResponseDto {
-  id: number; // ListingItem id
-  listingId: number;
-  listingImageId: number;
-  itemInfoId: number;
-  cardNameId: number | null;
-  cardCode: string;
-  nation: Nation;
-  rarity: Rarity;
-  detail: string; // 설명
-  candidate: CandidateResponseDto | null;
-  cardName: CardNameResponseDto | null;
-
-  // 날짜는 받아오되, createdAt / updatedAt은 프론트에서 쓰지 않아도 됨
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CandidateResponseDto {
-  id: number;
-  name: string;
-}
-
-export interface CardNameResponseDto {
-  id: number;
-  name: string;
-}
-
-export type AccessoryInfoResponseDto = {
-  id: number;
-  name: string;
-};
-
-export type ItemInfoResponseDto = {
-  id: number;
-  type: ListingItemType;
-  cardInfo: CardInfoResponseDto | null;
-  accessoryInfo: AccessoryInfoResponseDto | null;
-};
-
-export interface CreateCardInfoDto {
-  cardNameId?: number;
-  candidateId?: number;
-  candidateInfo?: { name: string };
-  cardCode: string;
-  nation: Nation;
-  rarity: Rarity;
-}
-export interface CreateAccessoryInfoDto {
-  name: string;
-}
-
-export type CreateListingItemRequest = Omit<ListingItemDraft, "localImageId">;
-
-export type CreateListingRequest = {
-  userId: number;
-  title: string;
-  memo: string;
-  status: ListingStatus;
-  items: CreateListingItemRequest[];
-  images: ListingImageResponseDto[];
-  // images 필드는 선택사항이라 지금은 생략하거나 추후 이미지 업로드 붙일 때 추가
-};
-
-export interface SearchCardDto {
-  nameQuery: string;
-  codeQuery: string;
 }

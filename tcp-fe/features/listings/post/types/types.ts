@@ -1,9 +1,12 @@
 // types.ts (일부)
 
-import { ListingItemType } from "@/lib/api/listings/types";
+import { ListingItemType, ListingStatus } from "@/lib/api/listings/types";
 
-export interface ImageGroupDraft {
+export interface ImageGroupDraft extends ImageGroup {
   localImageId: string;
+}
+
+export interface ImageGroup {
   file: File | null;
   imageId: number;
   previewUrl: string;
@@ -11,20 +14,26 @@ export interface ImageGroupDraft {
   items: ListingItemDraft[];
 }
 
-export interface ListingDraft {
+export interface Listing {
   title: string;
+  memo: string | null;
+  status: ListingStatus;
+}
+export interface ListingDraft extends Listing {
   // 필요하면 status 등도 여기로 확장 가능
   groups: ImageGroupDraft[];
 }
 
-export interface ListingItemDraft {
+export interface ListingItem {
+  listingImageId: number | null;
   name: string;
   pricePerUnit: number;
   unit: number;
   detailText: string;
   quantity: number;
+}
+export interface ListingItemDraft extends ListingItem {
   localImageId: string | null;
-  listingImageId: number | null;
 }
 
 export type ItemSearchInfo = {
