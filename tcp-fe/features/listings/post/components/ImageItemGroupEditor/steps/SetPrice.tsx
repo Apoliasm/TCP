@@ -28,7 +28,7 @@ export function SetPrice({ value, actions }: SetPriceProps) {
 
       <NumberInput
         value={{
-          defaultValue: itemDraft.pricePerUnit,
+          currentValue: itemDraft.pricePerUnit,
           increaseUnit: 1000,
           unitName: "원",
           updateKey: "pricePerUnit",

@@ -3,10 +3,10 @@ import {
   GroupEditorState,
   ListingItemDraft,
 } from "@/features/listings/post/types/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type PropsValue = {
-  defaultValue: number;
+  currentValue: number;
   increaseUnit: number;
   unitName: string;
   updateKey: keyof ListingItemDraft;
@@ -16,34 +16,39 @@ type Props = {
   value: PropsValue;
   action: EditorStepPropsActions;
 };
-
 export function NumberInput(props: Props) {
   const { value, action } = props;
-  const { defaultValue, increaseUnit, unitName, updateKey } = value;
-  const [inputValue, setInputValue] = useState<number>(defaultValue);
+  const { currentValue, increaseUnit, unitName, updateKey } = value;
+  const [inputValue, setInputValue] = useState<string>(`${currentValue}`);
   const { onChange } = action;
-
+  useEffect(() => {
+    setInputValue(`${currentValue}`);
+  }, [currentValue]);
   const handleDecrease = () => {
-    const next = Math.max(1, inputValue - increaseUnit);
-    setInputValue(next);
+    const next = Math.max(0, currentValue - increaseUnit);
+    setInputValue(`${next}`);
     onChange({ [updateKey]: next } as Partial<ListingItemDraft>);
   };
 
   const handleIncrease = () => {
-    const next = inputValue + increaseUnit;
-    setInputValue(next);
+    const next = currentValue + increaseUnit;
+    setInputValue(`${next}`);
     onChange({ [updateKey]: next } as Partial<ListingItemDraft>);
   };
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = Number(e.target.value);
+    let next: number = 0;
+    if (e.target.value.length === 0) {
+      setInputValue("");
+      next = 0;
+    } else {
+      const raw = Number(e.target.value);
+      // 숫자가 아니면 무시
+      if (isNaN(raw)) return;
+      next = Math.max(0, raw);
+    }
 
-    // 숫자가 아니면 무시
-    if (isNaN(raw)) return;
-
-    // 최소 1 이상만 허용
-    const next = Math.max(0, raw);
-    setInputValue(next);
+    setInputValue(`${next}`);
     onChange({ [updateKey]: next } as Partial<ListingItemDraft>);
   };
   return (
