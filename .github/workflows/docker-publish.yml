@@ -28,7 +28,7 @@ jobs:
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./tcp-fe/
           push: true
           tags: ghcr.io/apoliasm/tcp-fe:latest
           cache-from: type=gha
