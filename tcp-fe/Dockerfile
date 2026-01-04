@@ -22,10 +22,6 @@ COPY --from=deps /app/node_modules /app/node_modules
 COPY package.json pnpm-lock.yaml ./
 COPY . .
 
-ARG NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-RUN pnpm build
-
 # Next.js 빌드
 RUN pnpm build
 
