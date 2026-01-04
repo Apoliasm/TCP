@@ -4,7 +4,7 @@ import { Dispatch, useRef, useState } from "react";
 import { GroupEditDispatch, ImageGroupDraft } from "../types/types";
 import { ImageItemGroupEditor } from "./ImageItemGroupEditor/ImageItemGroupEditor";
 import { postListingImage } from "@/lib/api/listings/mutations";
-
+import { v4 as uuidv4 } from "uuid";
 type ListingEditorValue = {
   groups: ImageGroupDraft[];
 };
@@ -33,7 +33,7 @@ export function ListingEditor({ value, actions }: ListingEditorProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const localImageId = crypto.randomUUID();
+    const localImageId = uuidv4();
     const previewUrl = URL.createObjectURL(file);
     const { id, url } = await postListingImage(imageOrder, file);
     setImageOrder((prev) => prev + 1);
