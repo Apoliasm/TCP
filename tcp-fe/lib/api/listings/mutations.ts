@@ -11,9 +11,6 @@ import {
 } from "@/features/listings/post/types/types";
 import { DraftModeProvider } from "next/dist/server/async-storage/draft-mode-provider";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
-
 function mapDraftToCreateListingRequest(
   draft: ListingDraft,
   sellerId: number
@@ -59,7 +56,7 @@ export async function createListingFromDraft(
     (payload as any).status = options.status;
   }
 
-  const res = await fetch(`${BASE_URL}/api/listings`, {
+  const res = await fetch(`/api/listings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,7 +83,7 @@ export async function postListingImage(order: number, file: File) {
   formData.append("order", String(order));
   formData.append("file", file);
 
-  const res = await fetch(`${BASE_URL}/api/listing-images`, {
+  const res = await fetch(`/api/listing-images`, {
     method: "POST",
     body: formData,
     // ⚠️ Content-Type 은 직접 지정하지 않는다!
