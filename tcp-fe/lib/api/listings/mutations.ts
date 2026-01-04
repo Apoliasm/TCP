@@ -59,7 +59,7 @@ export async function createListingFromDraft(
     (payload as any).status = options.status;
   }
 
-  const res = await fetch(`${BASE_URL}/listings`, {
+  const res = await fetch(`${BASE_URL}/api/listings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export async function postListingImage(order: number, file: File) {
   formData.append("order", String(order));
   formData.append("file", file);
 
-  const res = await fetch(`${BASE_URL}/listing-images`, {
+  const res = await fetch(`${BASE_URL}/api/listing-images`, {
     method: "POST",
     body: formData,
     // ⚠️ Content-Type 은 직접 지정하지 않는다!
