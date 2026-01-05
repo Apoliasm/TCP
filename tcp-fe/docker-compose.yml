@@ -1,8 +1,0 @@
-services:
-  frontend:
-    build:
-      context: .
-    container_name: tcp-frontend
-    restart: unless-stopped
-    expose:
-      - "3001"
