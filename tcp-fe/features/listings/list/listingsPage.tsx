@@ -43,7 +43,7 @@ function ListingCard({ listing }: ListingCardProps) {
         {listing.thumbnailURL ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${listing.thumbnailURL}`}
+            src={`/api${listing.thumbnailURL}`}
             alt={listing.title}
             className="w-full h-full object-cover rounded"
           />

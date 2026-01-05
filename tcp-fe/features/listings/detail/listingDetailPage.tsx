@@ -96,7 +96,7 @@ function ImageSection({ image }: { image: ImageGroupResponse }) {
       <div className="w-full h-56 bg-gray-100 flex items-center justify-center text-gray-400 text-sm mb-4">
         {imageSrc ? (
           <img
-            src={imageSrc}
+            src={`/api${imageSrc}`}
             alt={`listing-image-${image.id}`}
             className="h-full object-contain"
           />
