@@ -4,7 +4,7 @@ import {
   EditorStepPropsValue,
   ListingItemDraft,
 } from "../../../types/types";
-import { NumberInput } from "@/shared/component/numberInput";
+import { NumberInput } from "@/shared/component/NumberInput";
 
 type SetPriceProps = {
   value: EditorStepPropsValue;
