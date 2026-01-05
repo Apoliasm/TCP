@@ -21,7 +21,7 @@ function mapDraftToCreateListingRequest(
       return { ...rest };
     })
   );
-  console.log(draft.groups);
+
   const images: Image[] = draft.groups
     .filter((img) => img.imageId != null)
     .map((img) => ({
@@ -29,13 +29,6 @@ function mapDraftToCreateListingRequest(
       order: img.order,
     }));
 
-  console.log({
-    title: draft.title,
-    sellerId,
-    status: ListingStatus.ON_SALE,
-    items,
-    images,
-  });
   return {
     title: draft.title,
     userId: 1,
@@ -51,7 +44,6 @@ export async function createListingFromDraft(
   options: { sellerId: number; status?: string } // ListingStatus 써도 됨
 ) {
   const payload = mapDraftToCreateListingRequest(draft, options.sellerId);
-  console.log(payload);
   if (options.status) {
     (payload as any).status = options.status;
   }
