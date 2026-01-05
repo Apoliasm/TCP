@@ -14,7 +14,7 @@ export function AppHeader({
   right = <UserInfoButton />,
 }: AppHeaderProps) {
   return (
-    <header className="w-full bg-white border-slate-200">
+    <header className="w-full bg-slate-50 border-slate-300 shadow-sm">
       <div className="max-w-5xl mx-auto h-14 flex items-center justify-between px-4">
         {/* Left: Logo or Title */}
         <Link href="/" className="text-xl font-semibold text-slate-900">
