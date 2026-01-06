@@ -1,6 +1,7 @@
 "use client";
-
 import { useListings } from "./hooks/useListings";
+import { ItemTags } from "./components/ItemTags";
+import { StatusBadge } from "@/shared/ui/StatusBadge";
 export default function ListingsPage() {
   // 일단은 '전체' 상태, page=1 고정
   const { data, isLoading, error } = useListings({ page: 1, size: 20 });
@@ -53,36 +54,14 @@ function ListingCard({ listing }: ListingCardProps) {
       </div>
 
       {/* 텍스트 영역 */}
-      <div className="flex-1">
+      <div className="flex flex-col flex-1 gap-3">
         <div className="flex items-center gap-2 mb-1">
           <StatusBadge status={listing.status} />
           <h2 className="font-semibold truncate">{listing.title}</h2>
         </div>
+        <div>
+        </div>
       </div>
     </a>
-  );
-}
-
-function StatusBadge({ status }: { status: "ON_SALE" | "RESERVED" | "SOLD" }) {
-  const label =
-    status === "ON_SALE"
-      ? "판매중"
-      : status === "RESERVED"
-      ? "예약중"
-      : "판매완료";
-
-  const style =
-    status === "ON_SALE"
-      ? "bg-green-100 text-green-700"
-      : status === "RESERVED"
-      ? "bg-yellow-100 text-yellow-700"
-      : "bg-gray-200 text-gray-600";
-
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 text-xs rounded ${style}`}
-    >
-      {label}
-    </span>
   );
 }
