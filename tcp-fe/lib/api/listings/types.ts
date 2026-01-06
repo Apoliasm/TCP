@@ -23,8 +23,10 @@ export type ListingSummary = {
   createdAt: string;
   updatedAt: string;
   thumbnailURL: string;
+  items: ItemSummary[];
 };
 
+export type ItemSummary = Pick<ListingItemResponse, "name" | "id">;
 export type FetchListingsParams = {
   status?: ListingStatus;
   page?: number;
