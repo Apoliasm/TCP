@@ -7,14 +7,14 @@ import {
   SearchQuery,
 } from "./types";
 export async function fetchListings(
-  params: FetchListingsParams = {}
+  params: FetchListingsParams = { query: "" }
 ): Promise<ListingSummary[]> {
   const query = new URLSearchParams();
 
   //   if (params.status) query.set("status", params.status);
   //   if (params.page) query.set("page", String(params.page));
   //   if (params.size) query.set("size", String(params.size));
-
+  if (params.query.length > 0) query.set("query", params.query);
   const res = await fetch(`/api/listings?${query.toString()}`, {
     // 필요하면 credentials, headers 등 추가
     cache: "no-store", // React Query가 캐싱하므로 fetch는 매번 fresh로

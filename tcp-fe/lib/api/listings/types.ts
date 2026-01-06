@@ -31,6 +31,7 @@ export type FetchListingsParams = {
   status?: ListingStatus;
   page?: number;
   size?: number;
+  query: string;
 };
 
 export interface ListingResponse extends Listing {
