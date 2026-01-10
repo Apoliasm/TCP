@@ -1,5 +1,5 @@
 import ListingDetailPage from "@/features/listings/detail/listingDetailPage";
-import { FeaturePageLayout } from "@/shared/ui/featurePageLayout";
+import { FeaturePageLayout } from "@/shared/ui/FeaturePageLayout";
 
 type Props = { params: Promise<{ id: string }> };
 // app/listings/[id]/page.tsx

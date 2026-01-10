@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppHeader } from "@/shared/ui/appHeader";
+import { BottomNav } from "@/shared/ui/BottomNav";
+import CommonRouter from "@/shared/ui/CommonRouter";
 
 export const metadata: Metadata = {
   title: "TCG 중고 거래",
@@ -16,7 +18,10 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <AppHeader />
-        <Providers>{children}</Providers>
+        <Providers>
+          <CommonRouter>{children}</CommonRouter>
+        </Providers>
+        <BottomNav />
       </body>
     </html>
   );

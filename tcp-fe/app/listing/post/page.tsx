@@ -1,5 +1,5 @@
 import { ListingPostPage } from "@/features/listings/post/listingPostPage";
-import { FeaturePageLayout } from "@/shared/ui/featurePageLayout";
+import { FeaturePageLayout } from "@/shared/ui/FeaturePageLayout";
 
 export default function ListingPostPageRoute() {
   return (
