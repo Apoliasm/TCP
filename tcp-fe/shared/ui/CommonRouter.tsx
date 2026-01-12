@@ -7,12 +7,10 @@ type Props = {
 export default function CommonRouter(props: Props) {
   const { children } = props;
   return (
-    <div className="bg-slate-50">
-      <div className="min-h-screen">
-        <div className="rounded-2xl bg-white shadow-lg border border-slate-100 p-6 max-w-3xl mx-auto px-4">
-          {children}
-        </div>
+    <main className="flex flex-col grow bg-slate-50 pb-8 pt-2">
+      <div className="h-full rounded-2xl bg-white shadow-lg border border-slate-100 p-6 w-11/12 mx-auto">
+        {children}
       </div>
-    </div>
+    </main>
   );
 }

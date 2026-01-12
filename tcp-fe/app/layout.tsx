@@ -16,12 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>
-        <AppHeader />
+      <body className="h-dvh min-h-dvh flex flex-col">
         <Providers>
+          <AppHeader />
           <CommonRouter>{children}</CommonRouter>
         </Providers>
-        <BottomNav />
       </body>
     </html>
   );
