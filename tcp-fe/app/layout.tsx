@@ -19,7 +19,9 @@ export default function RootLayout({
       <body className="h-dvh min-h-dvh flex flex-col">
         <Providers>
           <AppHeader />
-          <CommonRouter>{children}</CommonRouter>
+          <main className="flex flex-col grow bg-slate-50 pb-8 pt-2">
+            <CommonRouter>{children}</CommonRouter>
+          </main>
         </Providers>
       </body>
     </html>
