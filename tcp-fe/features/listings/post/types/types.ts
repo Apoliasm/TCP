@@ -38,6 +38,7 @@ export interface ListingRequest extends Listing {
 export interface ListingItem {
   listingImageId: number | null;
   name: string;
+  itemId: number | null;
   pricePerUnit: number;
   unit: number;
   detailText: string;

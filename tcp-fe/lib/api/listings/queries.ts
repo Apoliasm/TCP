@@ -40,10 +40,10 @@ export async function fetchListingById(id: number): Promise<ListingResponse> {
 
 export async function searchItemByname({ query }: SearchQuery) {
   const queryString = new URLSearchParams();
-  queryString.set("nameQuery", query);
-  const res: ItemSearchInfo[] = await fetch(
-    `/api/items/info?${queryString}`
-  ).then((res) => res.json());
+  queryString.set("query", query);
+  const res: ItemSearchInfo[] = await fetch(`/api/items?${queryString}`).then(
+    (res) => res.json()
+  );
 
   return res;
 }

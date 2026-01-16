@@ -34,7 +34,7 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
     setSearchResult([]);
   };
   const onClickSearchItem = ({ name, id }: ItemSearchInfo) => {
-    updateItemDraft({ name });
+    updateItemDraft({ name, itemId: id });
     resetSearch();
   };
 

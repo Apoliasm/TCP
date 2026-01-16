@@ -34,6 +34,7 @@ function createEmptyItemDraft(base?: {
     pricePerUnit: 0,
     quantity: 1,
     unit: 1,
+    itemId: null,
     localImageId: base ? base.localImageId : null,
     listingImageId: base ? base.listingImageId : null,
   };
