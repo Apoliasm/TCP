@@ -52,16 +52,20 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
       setSearchResult([]);
       return;
     }
-
-    const timer = setTimeout(() => {
-      // query가 바뀐 후 300ms 동안 추가 입력이 없으면 실행
+    let timer: NodeJS.Timeout;
+    if (isSearching) {
+      timer = setTimeout(() => {
+        // query가 바뀐 후 300ms 동안 추가 입력이 없으면 실행
+        setIsSearching(true);
+        searchQuery(item.name);
+        updateItemDraft({ name: item.name });
+      }, 300);
+    } else {
       setIsSearching(true);
-      searchQuery(item.name);
-      updateItemDraft({ name: item.name });
-    }, 300);
+    }
+    return () => clearTimeout(timer);
 
     // query가 다시 바뀌면 이전 타이머 취소
-    return () => clearTimeout(timer);
   }, [item.name]);
   return (
     <div className="space-y-3 transition-opacity duration-300">
