@@ -85,7 +85,7 @@ export default function ListingDetailPage({ id }: Props) {
 }
 
 function ImageSection({ image }: { image: ImageGroupResponse }) {
-  const imageSrc = buildImageSrc(image.url);
+  const imageSrc = image.url;
 
   return (
     <section className="border rounded p-4 mb-6">
