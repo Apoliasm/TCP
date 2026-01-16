@@ -1,5 +1,6 @@
 import { StatusBadge } from "@/shared/ui/StatusBadge";
 import { ItemTags } from "./ItemTags";
+import Link from "next/link";
 
 type ListingCardProps = {
   listing: import("@/lib/api/listings/types").ListingSummary;
@@ -13,7 +14,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   });
 
   return (
-    <a
+    <Link
       href={`/listing/${listing.id}`}
       className="flex items-center gap-4 border rounded p-3 hover:bg-gray-50 transition"
     >
@@ -41,6 +42,6 @@ export function ListingCard({ listing }: ListingCardProps) {
           <ItemTags items={listing.items}></ItemTags>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
