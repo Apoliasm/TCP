@@ -23,10 +23,10 @@ export type ListingSummary = {
   createdAt: string;
   updatedAt: string;
   thumbnailURL: string;
-  items: ItemSummary[];
+  tags: ItemSummary[];
 };
 
-export type ItemSummary = Pick<ListingItemResponse, "name" | "id">;
+export type ItemSummary = Pick<ListingItemResponse, "name" >;
 export type FetchListingsParams = {
   status?: ListingStatus;
   page?: number;
@@ -35,8 +35,8 @@ export type FetchListingsParams = {
 };
 
 export interface ListingResponse extends Listing {
-  id: 3;
-  userId: 1;
+  id: number;
+  userId: number;
   createdAt: string;
   updatedAt: string;
   images: ImageGroupResponse[];

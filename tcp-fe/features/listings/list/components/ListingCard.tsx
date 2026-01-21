@@ -39,9 +39,9 @@ export function ListingCard({ listing }: ListingCardProps) {
           <h2 className="font-semibold truncate">{listing.title}</h2>
         </div>
         <div>
-          <ItemTags items={listing.items}></ItemTags>
+          <ItemTags items={listing.tags}></ItemTags>
         </div>
       </div>
     </Link>
   );
-}
+};
