@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { AppHeader } from "@/shared/ui/appHeader";
-import { BottomNav } from "@/shared/ui/BottomNav";
 import CommonRouter from "@/shared/ui/CommonRouter";
 
 export const metadata: Metadata = {
