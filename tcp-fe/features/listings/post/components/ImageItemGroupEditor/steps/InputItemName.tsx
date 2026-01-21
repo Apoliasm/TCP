@@ -75,12 +75,9 @@ export function InputItemName({ value, actions }: InputItemNameProps) {
         </h3>
       </div>
 
-      {/* 카드명 입력 + 검색 결과 (CARD일 때 추천) */}
       <div className="space-y-2">
         <p className="text-xs text-slate-500">
-          카드 이름을 입력하면 추천 결과가 나타납니다.
-          <br />
-          (카드가 아니라면 간단한 품목 이름을 적어주세요.)
+          판매 품목 이름을 입력하면 추천 결과가 나타납니다.
         </p>
         <input
           type="text"
