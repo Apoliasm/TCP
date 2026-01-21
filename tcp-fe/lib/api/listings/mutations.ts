@@ -89,3 +89,35 @@ export async function postListingImage(order: number, file: File) {
   const data: { id: number; url?: string; order?: number } = await res.json();
   return data;
 }
+
+/**
+ * Listing 삭제
+ * @param listingId 삭제할 listing ID
+ * @param userId 삭제하려는 사용자 ID (권한 확인용)
+ */
+export async function deleteListing(listingId: number, userId?: number) {
+  const url = new URL(`/api/listings/${listingId}/delete`, window.location.origin);
+  if (userId !== undefined) {
+    url.searchParams.set('userId', String(userId));
+  }
+
+  const res = await fetch(url.toString(), {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    let message = '게시글 삭제에 실패했습니다.';
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch (_) {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  return res.json();
+}

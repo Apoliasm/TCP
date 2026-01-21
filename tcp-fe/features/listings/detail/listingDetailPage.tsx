@@ -8,6 +8,10 @@ import {
   ListingResponse,
 } from "@/lib/api/listings/types";
 import { StatusBadge } from "@/shared/ui/StatusBadge";
+import { useUser } from "@/shared/hooks/useUser";
+import { RemoveAlert } from "./components/RemoveAlert";
+import { useDeleteListing } from "./hooks/useDeletingListing";
+import { useState } from "react";
 
 type Props = {
   id: number;
@@ -16,9 +20,27 @@ type Props = {
 export default function ListingDetailPage({ id }: Props) {
   const { data, isLoading, error } = useListing(id);
   const router = useRouter();
+  const { data: user } = useUser();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleBack = () => {
     router.push("/listing");
   };
+
+  const {
+    isDeleting,
+    handleDeleteConfirm,
+  } = useDeleteListing(id, user?.userId ?? undefined);
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+  };
+
+  // 현재 사용자가 게시글 작성자인지 확인
+  const isOwner = user?.userId !== null && user?.userId === data?.userId;
   if (!Number.isFinite(id)) {
     return <main className="p-8">잘못된 게시글 ID입니다.</main>;
   }
@@ -47,25 +69,37 @@ export default function ListingDetailPage({ id }: Props) {
 
   const createdText = listing?.createdAt
     ? new Date(listing.createdAt).toLocaleString("ko-KR", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : "";
 
   return (
     <main className="p-8 space-y-6">
       <header className="space-y-2">
-        <button
-          onClick={() => {
-            handleBack();
-          }}
-          className="text-sm text-gray-500 hover:underline"
-        >
-          ← 뒤로가기
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => {
+              handleBack();
+            }}
+            className="text-sm text-gray-500 hover:underline"
+          >
+            ← 뒤로가기
+          </button>
+
+          {isOwner && (
+            <button
+              onClick={handleDeleteClick}
+              disabled={isDeleting}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm"
+            >
+              {isDeleting ? "삭제 중..." : "삭제"}
+            </button>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           <StatusBadge status={listing.status} />
@@ -76,6 +110,10 @@ export default function ListingDetailPage({ id }: Props) {
           판매자 ID: {listing.userId} · 작성일: {createdText}
         </div>
       </header>
+
+      {showDeleteConfirm && (
+        <RemoveAlert handleDeleteCancel={handleDeleteCancel} handleDeleteConfirm={handleDeleteConfirm} isDeleting={isDeleting} />
+      )}
 
       {listing.images.map((image) => (
         <ImageSection key={image.id} image={image} />

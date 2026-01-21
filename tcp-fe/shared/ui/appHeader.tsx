@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import UserInfoButton from "./UserInfoButton";
-
 import { Bell } from "lucide-react";
-import NavItem from "./NavItem";
+
 import { useUser } from "../hooks/useUser";
 
 interface AppHeaderProps {
