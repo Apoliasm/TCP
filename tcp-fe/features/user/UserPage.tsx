@@ -15,27 +15,25 @@ export function UserPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold mb-4">내 판매글</h2>
-        {
-          data &&
-          <div className="grid grid-cols-1 gap-4 h-[240px] overflow-y-auto py-2">
-            {data.listings.map((listing) => {
-              return <ListingCard key={listing.id} listing={listing} />
-            })}
-          </div>
-
-        }
-      </div>
-      <div>
-        <h2 className="text-lg font-bold mb-4">구독중인 물품</h2>
-        <p className="text-sm text-gray-500 mb-4"> 구독중인 물품을 판매하는 게시물이 올라오면 알림을 받을 수 있습니다.</p>
-        {
-          data &&
-          <ItemTags items={data.subscribedItems} />
-        }
-
-      </div>
+      <section className="space-y-4">
+        <h2 id="my-listings-heading" className="text-lg font-bold mb-4">내 판매글</h2>
+        {data && (
+          <ul className="grid grid-cols-1 gap-4 h-[240px] overflow-y-auto py-2 list-none p-0 m-0">
+            {data.listings.map((listing) => (
+              <li key={listing.id}>
+                <ListingCard listing={listing} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section >
+        <h2 id="subscribed-heading" className="text-lg font-bold mb-4">구독중인 물품</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          구독중인 물품을 판매하는 게시물이 올라오면 알림을 받을 수 있습니다.
+        </p>
+        {data && <ItemTags items={data.subscribedItems} />}
+      </section>
     </div>
   );
 }

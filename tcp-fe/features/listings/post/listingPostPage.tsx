@@ -33,13 +33,19 @@ export function ListingPostPage() {
   const { isSubmitting, errorMessage, handleSubmit } = useListingSubmit();
 
   return (
-    <main className="p-6 space-y-6">
-      <ListingTitle value={{ title }} actions={{ setTitle }} />
+    <div className="p-6 space-y-6">
+      <header>
+        <ListingTitle value={{ title }} actions={{ setTitle }} />
+      </header>
       <ListingEditor value={{ groups }} actions={{ dispatchGroups }} />
 
-      {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+      {errorMessage && (
+        <p className="text-sm text-red-600" role="alert">
+          {errorMessage}
+        </p>
+      )}
 
-      <section className="rounded-xl p-6 flex items-center justify-end gap-3">
+      <footer className="rounded-xl p-6 flex items-center justify-end gap-3">
         <button
           type="button"
           className="text-sm px-4 py-2 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 transition"
@@ -67,7 +73,7 @@ export function ListingPostPage() {
         >
           {isSubmitting ? "등록 중..." : "게시글 등록"}
         </button>
-      </section>
-    </main>
+      </footer>
+    </div>
   );
 }

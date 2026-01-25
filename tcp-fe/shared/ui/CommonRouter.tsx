@@ -18,7 +18,7 @@ export default function CommonRouter(props: Props) {
 
   const { children } = props;
   return (
-    <div className="h-full rounded-2xl bg-white shadow-lg border border-slate-100 p-6 w-11/12 mx-auto">
+    <div className="h-full rounded-2xl bg-white shadow-lg border border-slate-100 p-4 sm:px-6 sm:py-4 w-11/12 mx-auto">
       {children}
     </div>
   );

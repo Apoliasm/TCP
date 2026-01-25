@@ -15,8 +15,8 @@ export default function ListingsPage() {
     query: fetchQuery.trim(),
   });
 
-  if (isLoading) return <div className="p-8">로딩 중...</div>;
-  if (error) return <div className="p-8">판매글을 불러오지 못했습니다.</div>;
+  if (isLoading) return <p className="p-8" role="status">로딩 중...</p>;
+  if (error) return <p className="p-8" role="alert">판매글을 불러오지 못했습니다.</p>;
 
   const onChange = (value: string) => setQuery(value);
 
@@ -24,27 +24,35 @@ export default function ListingsPage() {
   const totalCount = data?.length ?? 0;
 
   return (
-    <main className="p-8 space-y-4">
-      <SearchBar onChange={onChange} value={query} />
+    <div className="p-4 sm:px-8 space-y-4">
+      <search>
+        <SearchBar onChange={onChange} value={query} />
+      </search>
 
       {/* ✅ 검색 결과 요약 */}
-      {isSearching && (
-        <div className="text-sm text-slate-600">
-          <span className="font-medium text-slate-900">
-            '{fetchQuery.trim()}'
-          </span>
-          에 대한 검색 결과{" "}
-          <span className="font-semibold text-slate-900">{totalCount}</span>건
-        </div>
-      )}
 
-      {data && data.length > 0 ? (
-        data.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
-        ))
-      ) : (
-        <div className="text-slate-500">등록된 판매글이 없습니다.</div>
-      )}
-    </main>
+      <section className="space-y-4">
+        {isSearching && (
+          <p className="text-sm text-slate-600">
+            <span className="font-medium text-slate-900">
+              '{fetchQuery.trim()}'
+            </span>
+            에 대한 검색 결과{" "}
+            <span className="font-semibold text-slate-900">{totalCount}</span>건
+          </p>
+        )}
+        {data && data.length > 0 ? (
+          <ul className="list-none p-0 m-0 space-y-4">
+            {data.map((listing) => (
+              <li key={listing.id}>
+                <ListingCard listing={listing} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-slate-500">등록된 판매글이 없습니다.</p>
+        )}
+      </section>
+    </div>
   );
 }

@@ -42,16 +42,17 @@ export default function ListingDetailPage({ id }: Props) {
   // 현재 사용자가 게시글 작성자인지 확인
   const isOwner = user?.userId !== null && user?.userId === data?.userId;
   if (!Number.isFinite(id)) {
-    return <main className="p-8">잘못된 게시글 ID입니다.</main>;
+    return <p className="p-8" role="alert">잘못된 게시글 ID입니다.</p>;
   }
 
   if (isLoading) {
-    return <main className="p-8">게시글을 불러오는 중입니다...</main>;
+    return <p className="p-8" role="status">게시글을 불러오는 중입니다...</p>;
   }
 
   if (error || !data) {
     return (
-      <main className="p-8 space-y-4">
+      <div className="p-8 space-y-4">
+
         <button
           onClick={() => {
             handleBack();
@@ -60,8 +61,9 @@ export default function ListingDetailPage({ id }: Props) {
         >
           ← 뒤로가기
         </button>
-        <div>게시글을 불러오지 못했습니다.</div>
-      </main>
+
+        <p role="alert">게시글을 불러오지 못했습니다.</p>
+      </div>
     );
   }
 
@@ -78,9 +80,9 @@ export default function ListingDetailPage({ id }: Props) {
     : "";
 
   return (
-    <main className="p-8 space-y-6">
+    <article className="p-8 space-y-6">
       <header className="space-y-2">
-        <div className="flex items-center justify-between">
+        <nav className="flex items-center justify-between">
           <button
             onClick={() => {
               handleBack();
@@ -99,16 +101,16 @@ export default function ListingDetailPage({ id }: Props) {
               {isDeleting ? "삭제 중..." : "삭제"}
             </button>
           )}
-        </div>
+        </nav>
 
         <div className="flex items-center gap-2">
           <StatusBadge status={listing.status} />
-          <h1 className="text-2xl font-bold">{listing.title}</h1>
+          <h2 className="text-2xl font-bold">{listing.title}</h2>
         </div>
 
-        <div className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500">
           판매자 ID: {listing.userId} · 작성일: {createdText}
-        </div>
+        </p>
       </header>
 
       {showDeleteConfirm && (
@@ -118,7 +120,7 @@ export default function ListingDetailPage({ id }: Props) {
       {listing.images.map((image) => (
         <ImageSection key={image.id} image={image} />
       ))}
-    </main>
+    </article>
   );
 }
 
@@ -126,23 +128,25 @@ function ImageSection({ image }: { image: ImageGroupResponse }) {
   const imageSrc = image.url;
 
   return (
-    <section className="border rounded p-4 mb-6">
-      <div className="text-sm text-gray-500 mb-2">사진 #{image.order + 1}</div>
+    <section className="border rounded p-4 mb-6" aria-labelledby={`image-heading-${image.id}`}>
+      <h3 id={`image-heading-${image.id}`} className="text-sm text-gray-500 mb-2">
+        사진 #{image.order + 1}
+      </h3>
 
-      <div className="w-full h-56 bg-gray-100 flex items-center justify-center text-gray-400 text-sm mb-4">
+      <figure className="w-full h-56 bg-gray-100 flex items-center justify-center text-gray-400 text-sm mb-4 m-0">
         {imageSrc ? (
           <img
             src={`/api${imageSrc}`}
-            alt={`listing-image-${image.id}`}
+            alt={`사진 ${image.order + 1}`}
             className="h-full object-contain"
           />
         ) : (
-          "사진 데이터는 아직 없음"
+          <figcaption>사진 데이터는 아직 없음</figcaption>
         )}
-      </div>
+      </figure>
 
       <div>
-        <h3 className="font-semibold mb-2">이 사진에 포함된 아이템</h3>
+        <h4 className="font-semibold mb-2">이 사진에 포함된 아이템</h4>
 
         {image.items.length === 0 ? (
           <p className="text-gray-400 text-sm">등록된 아이템이 없습니다.</p>
